@@ -111,20 +111,6 @@
         "runtime": {
           "bin/placeholder/Domain.dll": {}
         }
-      },
-      "Infrastructure/1.0.0": {
-        "type": "project",
-        "framework": ".NETCoreApp,Version=v8.0",
-        "dependencies": {
-          "Application": "1.0.0",
-          "Domain": "1.0.0"
-        },
-        "compile": {
-          "bin/placeholder/Infrastructure.dll": {}
-        },
-        "runtime": {
-          "bin/placeholder/Infrastructure.dll": {}
-        }
       }
     }
   },
@@ -486,18 +472,12 @@
       "type": "project",
       "path": "../Domain/Domain.csproj",
       "msbuildProject": "../Domain/Domain.csproj"
-    },
-    "Infrastructure/1.0.0": {
-      "type": "project",
-      "path": "../Infrastructure/Infrastructure.csproj",
-      "msbuildProject": "../Infrastructure/Infrastructure.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net8.0": [
       "Application >= 1.0.0",
       "Domain >= 1.0.0",
-      "Infrastructure >= 1.0.0",
       "Swashbuckle.AspNetCore >= 6.6.2"
     ]
   },
@@ -534,9 +514,6 @@
             },
             "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ProyectoFinal\\Domain\\Domain.csproj": {
               "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ProyectoFinal\\Domain\\Domain.csproj"
-            },
-            "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ProyectoFinal\\Infrastructure\\Infrastructure.csproj": {
-              "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ProyectoFinal\\Infrastructure\\Infrastructure.csproj"
             }
           }
         }
