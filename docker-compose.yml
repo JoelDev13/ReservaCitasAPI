@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  potgres:
+    image: postgres:16
+    container_name: postgres
+    environment:
+      POSTGRES_USER : admin
+      POSTGRES_PASSWORD: TuPasswordSeguraJM
+      POSTGRES_DB: SistemaCitaDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:

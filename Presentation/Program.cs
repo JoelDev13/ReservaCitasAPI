@@ -1,3 +1,6 @@
+using Infrastructure.Persistencia.Contexto;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +11,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+//aqui consiguo la cadena de conexion de appsettings.json
+var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
+
+// aqui inyecto el dbcontext y lo paso a la cadena
+builder.Services.AddDbContext<CitasDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

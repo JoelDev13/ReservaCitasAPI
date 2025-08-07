@@ -1,1 +1,6 @@
 .vs
+**/obj/
+**/bin/
+*.nuget.dgspec.json
+project.assets.json
+*.cache
