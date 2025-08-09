@@ -14,30 +14,33 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
+var buider = builder.Build();
 
 //aqui consiguo la cadena de conexion de appsettings.json
-var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = buider.Configuration.GetConnectionString("DefaultConnection");
 
 // aqui inyecto el dbcontext y lo paso a la cadena
 builder.Services.AddDbContext<CitasDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+
 // Inyeccion del repositorio y UnitOfWork
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+var app = builder.Build();
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (buider.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    buider.UseSwagger();
+    buider.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+buider.UseHttpsRedirection();
 
-app.UseAuthorization();
+buider.UseAuthorization();
 
-app.MapControllers();
+buider.MapControllers();
 
-app.Run();
+buider.Run();
