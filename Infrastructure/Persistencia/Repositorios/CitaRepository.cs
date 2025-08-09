@@ -5,7 +5,7 @@ using ProyectoFinal.Infrastructure.Interfaces;
 
 namespace ProyectoFinal.Infrastructure.Repositories
 {
-    public class CitaRepository : Repository<Cita>, ICitaRepository
+    public class CitaRepository : GenericRepository<Cita>, ICitaRepository
     {
         public CitaRepository(CitasDbContext context) : base(context) { }
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ProyectoFinal.Infrastructure.Interfaces
+namespace ProyectoFinal.Domain.Interfaces
 {
     public interface IRepository<T> where T : class
     {
