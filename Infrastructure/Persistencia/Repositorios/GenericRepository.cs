@@ -1,17 +1,17 @@
 ﻿using Infrastructure.Persistencia.Contexto;
 using Microsoft.EntityFrameworkCore;
-using ProyectoFinal.Infrastructure.Interfaces;
+using ProyectoFinal.Domain.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ProyectoFinal.Infrastructure.Repositories
 {
-    public class Repository<T> : IRepository<T> where T : class
+    public class GenericRepository<T> : IRepository<T> where T : class
     {
         protected readonly CitasDbContext _context;
         protected readonly DbSet<T> _dbSet;
 
-        public Repository(CitasDbContext context)
+        public GenericRepository(CitasDbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();
