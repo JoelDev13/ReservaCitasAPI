@@ -28,5 +28,6 @@ namespace Domain.Entidades
         {
             get; set;
         }
+        public int PacienteId { get; set; }
     }
 }
