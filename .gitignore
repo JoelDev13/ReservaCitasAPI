@@ -1,6 +1,8 @@
 # Archivos de compilación
 bin/
 obj/
+Presentation/obj/
+
 
 # Visual Studio
 .vs/
