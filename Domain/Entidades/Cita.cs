@@ -15,7 +15,7 @@ namespace Domain.Entidades
         public int EstacionNumero { get; set; }
 
         [Required]
-        public TipoTramite Estado { get; set; }
+        public EstadoCita Estado { get; set; }
 
         // Relaciones
         [Required]
@@ -28,6 +28,6 @@ namespace Domain.Entidades
         {
             get; set;
         }
-        public string TipoTramite { get; set; } //renovacion, primera vez, etc..
+        public TipoTramite  TipoTramite { get; set; } //renovacion, primera vez, etc..
     }
 }
