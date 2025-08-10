@@ -746,8 +746,8 @@
     "net8.0": [
       "Application >= 1.0.0",
       "Domain >= 1.0.0",
-      "Microsoft.EntityFrameworkCore >= 8.0.19",
-      "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.0.11"
+      "Microsoft.EntityFrameworkCore >= 8.*",
+      "Npgsql.EntityFrameworkCore.PostgreSQL >= 8.*"
     ]
   },
   "packageFolders": {
@@ -809,11 +809,11 @@
         "dependencies": {
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
-            "version": "[8.0.19, )"
+            "version": "[8.*, )"
           },
           "Npgsql.EntityFrameworkCore.PostgreSQL": {
             "target": "Package",
-            "version": "[8.0.11, )"
+            "version": "[8.*, )"
           }
         },
         "imports": [

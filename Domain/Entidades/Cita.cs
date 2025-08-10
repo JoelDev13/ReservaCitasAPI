@@ -28,5 +28,6 @@ namespace Domain.Entidades
         {
             get; set;
         }
+        public TipoTramite  TipoTramite { get; set; } //renovacion, primera vez, etc..
     }
 }

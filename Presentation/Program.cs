@@ -1,5 +1,9 @@
+using Domain.Interfaces;
 using Infrastructure.Persistencia.Contexto;
+using Infrastructure.Persistencia.Repositorios;
 using Microsoft.EntityFrameworkCore;
+using ProyectoFinal.Domain.Interfaces;
+using ProyectoFinal.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,17 +14,24 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var app = builder.Build();
 
 //aqui consiguo la cadena de conexion de appsettings.json
-var connectionString = app.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // aqui inyecto el dbcontext y lo paso a la cadena
 builder.Services.AddDbContext<CitasDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+
+// Inyeccion del repositorio y UnitOfWork
+builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+var app = builder.Build();
+
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();

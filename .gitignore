@@ -1,6 +1,24 @@
-.vs
-**/obj/
-**/bin/
+# Archivos de compilación
+bin/
+obj/
+Presentation/obj/
+
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+#Rider
+.idea/
+
+
+# Archivos NuGet
 *.nuget.dgspec.json
 project.assets.json
+*.nupkg
+*.snupkg
+
+# Archivos temporales y de caché
 *.cache
+*.log
