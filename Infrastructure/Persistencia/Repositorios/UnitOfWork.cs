@@ -30,8 +30,7 @@ namespace Infrastructure.Persistencia.Repositorios
             _context = context;
 
         }
-
-        public IRepository<Usuario> Usuarios => _usuarios ??= new GenericRepository<Usuario>(_context);
+        public IRepository<Usuario> Usuario => _usuarios?? new GenericRepository<Usuario>(_context);
 
         public IRepository<Cita> Citas => _citas ??= new GenericRepository<Cita>(_context);
 
@@ -41,7 +40,6 @@ namespace Infrastructure.Persistencia.Repositorios
 
         public IRepository<Estacion> Estaciones => _estaciones ??= new GenericRepository<Estacion>(_context);
 
-        public IRepository<Usuario> Usuario => throw new NotImplementedException();
 
         public async Task<int> SaveChangesAsync()
 

@@ -14,10 +14,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var buider = builder.Build();
 
 //aqui consiguo la cadena de conexion de appsettings.json
-var connectionString = buider.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // aqui inyecto el dbcontext y lo paso a la cadena
 builder.Services.AddDbContext<CitasDbContext>(options =>
@@ -30,17 +29,18 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
-if (buider.Environment.IsDevelopment())
+if (builder.Environment.IsDevelopment())
 {
-    buider.UseSwagger();
-    buider.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-buider.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
-buider.UseAuthorization();
+app.UseAuthorization();
 
-buider.MapControllers();
+app.MapControllers();
 
-buider.Run();
+app.Run();
