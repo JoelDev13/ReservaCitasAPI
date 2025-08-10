@@ -9,6 +9,10 @@ Presentation/obj/
 *.user
 *.suo
 
+#Rider
+.idea/
+
+
 # Archivos NuGet
 *.nuget.dgspec.json
 project.assets.json
