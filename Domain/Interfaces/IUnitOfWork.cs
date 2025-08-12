@@ -6,11 +6,13 @@ namespace Domain.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IRepository<Usuario> Usuario { get; }
-        IRepository<Cita> Citas { get; }
-        IRepository<Turno> Turnos { get; }
-        IRepository<Configuracion> Configuraciones { get; }
-        IRepository<Estacion> Estaciones { get; }
+        IGenericRepository<Usuario> Usuario { get; }
+        IGenericRepository<Cita> Citas { get; }
+        IGenericRepository<Turno> Turnos { get; }
+        IGenericRepository<Configuracion> Configuraciones { get; }
+        IGenericRepository<Estacion> Estaciones { get; }
+        
+
         Task<int>SaveChangesAsync();
         
     }
