@@ -1,3 +1,5 @@
+using Application.Interfaces;
+using Application.Servicios;
 using Domain.Interfaces;
 using Infrastructure.Persistencia.Contexto;
 using Infrastructure.Persistencia.Repositorios;
@@ -24,8 +26,12 @@ builder.Services.AddDbContext<CitasDbContext>(options =>
 
 
 // Inyeccion del repositorio y UnitOfWork
-builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddScoped<IConfiguracionService, ConfiguracionService>();
+builder.Services.AddScoped<Application.Servicios.CitaService>();
+
 
 var app = builder.Build();
 

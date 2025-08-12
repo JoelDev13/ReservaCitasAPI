@@ -22,3 +22,8 @@ project.assets.json
 # Archivos temporales y de caché
 *.cache
 *.log
+
+appsettings.json
+appsettings.Development.json
+
+

@@ -13,15 +13,15 @@ namespace Infrastructure.Persistencia.Repositorios
 
         private readonly CitasDbContext _context;
 
-        private IRepository<Usuario> _usuarios;
+        private IGenericRepository<Usuario> _usuarios;
 
-        private IRepository<Cita> _citas;
+        private IGenericRepository<Cita> _citas;
 
-        private IRepository<Turno> _turnos;
+        private IGenericRepository<Turno> _turnos;
 
-        private IRepository<Configuracion> _configuraciones;
+        private IGenericRepository<Configuracion> _configuraciones;
 
-        private IRepository<Estacion> _estaciones;
+        private IGenericRepository<Estacion> _estaciones;
 
         public UnitOfWork(CitasDbContext context)
 
@@ -30,15 +30,15 @@ namespace Infrastructure.Persistencia.Repositorios
             _context = context;
 
         }
-        public IRepository<Usuario> Usuario => _usuarios?? new GenericRepository<Usuario>(_context);
+        public IGenericRepository<Usuario> Usuario => _usuarios?? new GenericRepository<Usuario>(_context);
 
-        public IRepository<Cita> Citas => _citas ??= new GenericRepository<Cita>(_context);
+        public IGenericRepository<Cita> Citas => _citas ??= new GenericRepository<Cita>(_context);
 
-        public IRepository<Turno> Turnos => _turnos ??= new GenericRepository<Turno>(_context);
+        public IGenericRepository<Turno> Turnos => _turnos ??= new GenericRepository<Turno>(_context);
 
-        public IRepository<Configuracion> Configuraciones => _configuraciones ??= new GenericRepository<Configuracion>(_context);
+        public IGenericRepository<Configuracion> Configuraciones => _configuraciones ??= new GenericRepository<Configuracion>(_context);
 
-        public IRepository<Estacion> Estaciones => _estaciones ??= new GenericRepository<Estacion>(_context);
+        public IGenericRepository<Estacion> Estaciones => _estaciones ??= new GenericRepository<Estacion>(_context);
 
 
         public async Task<int> SaveChangesAsync()
