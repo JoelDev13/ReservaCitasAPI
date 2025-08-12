@@ -23,4 +23,7 @@ project.assets.json
 *.cache
 *.log
 
+appsettings.json
+appsettings.Development.json
+
 
