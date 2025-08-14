@@ -10,14 +10,14 @@ namespace Domain.Entidades
 
         [Required]
         [MaxLength(100)]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; }  = string.Empty;
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string ContrasenaHash { get; set; }
+        public string ContrasenaHash { get; set; } = string.Empty;
 
         public RolUsuario Rol { get; set; } = RolUsuario.Usuario;
 

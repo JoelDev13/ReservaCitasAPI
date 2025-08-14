@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Infrastructure
-build_property.ProjectDir = /home/joelito/Descargas/ReservaCitasAPI/Infrastructure/
+build_property.ProjectDir = C:\Users\la\Desktop\Programacion\Itla\Programacion 2\ReservaCitasAPI\Infrastructure\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

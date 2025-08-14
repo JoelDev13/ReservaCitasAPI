@@ -20,10 +20,12 @@ namespace Application.Servicios
 
         public bool Registrar(RegistroUsuarioDTO dto)
         {
-            if (_repositorio.ObtenerPorNombre(dto.Nombre) != null)
-                return false;
+            try
+            {
+                if (_repositorio.ObtenerPorEmail(dto.Email) != null)
+                    return false;
 
-            var usuario = new Usuario
+                var usuario = new Usuario
             {
                 Nombre = dto.Nombre,
                 Email = dto.Email,
@@ -34,10 +36,17 @@ namespace Application.Servicios
             _repositorio.Agregar(usuario);
             return _repositorio.GuardarCambios();
         }
+            catch
+            {
+                return false;
+            }
+        }
 
         public RespuestaLoginDTO? Login(LoginUsuarioDTO dto)
         {
-            var usuario = _repositorio.ObtenerPorNombre(dto.Nombre);
+            try
+            {
+                var usuario = _repositorio.ObtenerPorEmail(dto.Email);
             if (usuario == null) return null;
 
             if (!BCrypt.Net.BCrypt.Verify(dto.ContrasenaHash, usuario.ContrasenaHash))
@@ -46,6 +55,12 @@ namespace Application.Servicios
             var token = _generadorJwt.GenerarToken(usuario);
             return new RespuestaLoginDTO { Token = token };
         }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }
+
 

@@ -1,4 +1,5 @@
-﻿using Domain.Entidades;
+﻿using Application.DTOs.Cita;
+using Domain.Entidades;
 using Domain.Enums;
 using Domain.Interfaces;
 
@@ -13,6 +14,7 @@ namespace Application.Servicios
             _unitOfWork = unitOfWork;
         }
 
+        // Genera los slots segun la configuracon
         public async Task GenerarSlotsPorConfiguracionAsync(int configuracionId)
         {
             // Obtiene la configuracion
@@ -67,5 +69,34 @@ namespace Application.Servicios
             }
             await _unitOfWork.SaveChangesAsync();
         }
+
+        //Reservar una cita
+
+        public async Task<bool> ReservarCitaAsync(ReservarCitaDTO dto)
+        {
+            // Obtiene la cita que este libre en la estacion y fecha/hora indicada
+            var citas = await _unitOfWork.Citas.GetAllAsync();
+            var citaLibre = citas.FirstOrDefault(c =>
+                c.FechaHora == dto.FechaHora &&
+                c.EstacionNumero == dto.EstacionNumero &&
+                c.UsuarioId == 0 // Sin usuario asignado
+            );
+
+            if (citaLibre == null)
+                throw new Exception("No hay citas disponibles para ese horario y estacion");
+
+            // Asigna el usuario y el tipo de tramite
+            citaLibre.UsuarioId = dto.UsuarioId;
+            citaLibre.TipoTramite = dto.TipoTramite;
+            citaLibre.Estado = EstadoCita.Reservada;
+
+            _unitOfWork.Citas.Update(citaLibre);
+
+            var cambios = await _unitOfWork.SaveChangesAsync();
+            return cambios > 0;
+
+
+        }
     }
 }
+

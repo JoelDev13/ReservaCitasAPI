@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ProyectoFinal.Domain.Interfaces;
 using ProyectoFinal.Infrastructure.Repositories;
-using System.Security.Claims;
 using Infrastructure.Persistencia.Repositorios.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,12 +35,15 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IConfiguracionService, ConfiguracionService>();
-builder.Services.AddScoped<Application.Servicios.CitaService>();
+builder.Services.AddScoped<CitaService>();
+
 
 // Lee la clave JWT desde configuracion
-var claveSecreta = builder.Configuration["JWT:ClaveSecreta"];
+var claveSecreta = builder.Configuration["JWT:ClaveSecreta"]
+?? throw new InvalidOperationException("La clave JWT no está configurada");
 // Registra tu servicio de generacion de JWT
 builder.Services.AddSingleton<IGeneradorJWT>(new GeneradorJWT(claveSecreta));
+
 
 builder.Services.AddScoped<IAutenticacionService, ServiceAutenticacion>();
 builder.Services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();

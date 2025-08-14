@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.DTOs.Cita;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace Presentation.Controllers
@@ -14,6 +15,7 @@ namespace Presentation.Controllers
             _citaService = citaService;
         }
 
+        // Endpoint para generar slots segun configuracion
         [HttpPost("generar-slots/{configuracionId}")]
         public async Task<IActionResult> GenerarSlots(int configuracionId)
         {
@@ -25,6 +27,26 @@ namespace Presentation.Controllers
             catch (Exception ex)
             {
                 return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        // Endpoint para reservar una cita
+        [HttpPost("reservar")]
+        public async Task<IActionResult> ReservarCita([FromBody] ReservarCitaDTO dto)
+        {
+            try
+            {
+                var resultado = await _citaService.ReservarCitaAsync(dto);
+                if (!resultado) return BadRequest("No se pudo reservar la cita");
+                return Ok("Cita reservada correctamente");
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno del servidor");
             }
         }
     }

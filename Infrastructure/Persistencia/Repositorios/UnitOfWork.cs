@@ -13,7 +13,7 @@ namespace Infrastructure.Persistencia.Repositorios
 
         private readonly CitasDbContext _context;
 
-        private IGenericRepository<Usuario> _usuarios;
+        private IGenericRepository<Usuario> _usuarios; 
 
         private IGenericRepository<Cita> _citas;
 
@@ -28,6 +28,7 @@ namespace Infrastructure.Persistencia.Repositorios
         {
 
             _context = context;
+            
 
         }
         public IGenericRepository<Usuario> Usuario => _usuarios?? new GenericRepository<Usuario>(_context);

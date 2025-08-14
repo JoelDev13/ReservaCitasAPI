@@ -1,22 +1,23 @@
 using Domain.Entidades;
 using Domain.Interfaces;
 using Infrastructure.Persistencia.Contexto;
+using ProyectoFinal.Infrastructure.Repositories;
 using System.Linq;
 
 namespace Infrastructure.Persistencia.Repositorios
 {
-    public class RepositorioUsuario : IRepositorioUsuario
+    public class RepositorioUsuario : GenericRepository<Usuario>, IRepositorioUsuario
     {
         private readonly CitasDbContext _context;
 
-        public RepositorioUsuario(CitasDbContext context)
+        public RepositorioUsuario(CitasDbContext context) : base(context)
         {
             _context = context;
         }
 
-        public Usuario? ObtenerPorNombre(string nombre)
+        public Usuario? ObtenerPorEmail(string email)
         {
-            return _context.Usuarios.FirstOrDefault(u => u.Nombre == nombre);
+            return _context.Usuarios.FirstOrDefault(u => u.Email == email);
         }
 
         public void Agregar(Usuario entity)
@@ -28,5 +29,6 @@ namespace Infrastructure.Persistencia.Repositorios
         {
             return _context.SaveChanges() > 0;
         }
+
     }
 }

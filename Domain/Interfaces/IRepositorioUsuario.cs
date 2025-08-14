@@ -4,7 +4,7 @@ namespace Domain.Interfaces
 {
     public interface IRepositorioUsuario
     {
-        Usuario? ObtenerPorNombre(string nombreUsuario);
+        Usuario? ObtenerPorEmail(string email);
         void Agregar(Usuario usuario);
         bool GuardarCambios();
     }
