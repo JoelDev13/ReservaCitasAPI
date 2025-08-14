@@ -3,9 +3,14 @@ using Application.Servicios;
 using Domain.Interfaces;
 using Infrastructure.Persistencia.Contexto;
 using Infrastructure.Persistencia.Repositorios;
+using Infrastructure.Seguridad;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using ProyectoFinal.Domain.Interfaces;
 using ProyectoFinal.Infrastructure.Repositories;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +36,27 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IConfiguracionService, ConfiguracionService>();
 builder.Services.AddScoped<Application.Servicios.CitaService>();
+
+// Lee la clave JWT desde configuracion
+var claveSecreta = builder.Configuration["JWT:ClaveSecreta"];
+// Registra tu servicio de generacion de JWT
+builder.Services.AddSingleton(new GeneradorJWT(claveSecreta));
+
+// aqui convierto la cadena secreta a un arreglo de bytes
+var key = System.Text.Encoding.UTF8.GetBytes(claveSecreta);
+
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+    });
 
 
 var app = builder.Build();

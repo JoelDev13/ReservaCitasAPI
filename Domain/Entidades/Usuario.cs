@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Enums;
+using Domain.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entidades
@@ -17,6 +18,8 @@ namespace Domain.Entidades
 
         [Required]
         public string ContrasenaHash { get; set; }
+
+        public RolUsuario Rol { get; set; } = RolUsuario.Usuario;
 
         public ICollection<Cita> Citas { get; set; } = new List<Cita>();
     }

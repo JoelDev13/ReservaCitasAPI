@@ -1,7 +1,7 @@
 ﻿using Domain.Entidades;
 using Infrastructure.Persistencia.Contexto;
+using Infrastructure.Persistencia.Repositorios.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using ProyectoFinal.Infrastructure.Interfaces;
 
 namespace ProyectoFinal.Infrastructure.Repositories
 {
