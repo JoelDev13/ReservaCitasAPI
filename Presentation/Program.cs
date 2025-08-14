@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProyectoFinal.Domain.Interfaces;
 using ProyectoFinal.Infrastructure.Repositories;
 using System.Security.Claims;
+using Infrastructure.Persistencia.Repositorios.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,10 +41,16 @@ builder.Services.AddScoped<Application.Servicios.CitaService>();
 // Lee la clave JWT desde configuracion
 var claveSecreta = builder.Configuration["JWT:ClaveSecreta"];
 // Registra tu servicio de generacion de JWT
-builder.Services.AddSingleton(new GeneradorJWT(claveSecreta));
+builder.Services.AddSingleton<IGeneradorJWT>(new GeneradorJWT(claveSecreta));
+
+builder.Services.AddScoped<IAutenticacionService, ServiceAutenticacion>();
+builder.Services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();
+
+
 
 // aqui convierto la cadena secreta a un arreglo de bytes
 var key = System.Text.Encoding.UTF8.GetBytes(claveSecreta);
+
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
