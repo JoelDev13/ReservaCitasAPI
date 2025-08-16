@@ -1,4 +1,5 @@
 ﻿using Domain.Entidades;
+using Domain.Enums;
 using Infrastructure.Persistencia.Contexto;
 using Infrastructure.Persistencia.Repositorios.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,6 @@ namespace ProyectoFinal.Infrastructure.Repositories
                 .Where(c => c.UsuarioId == usuarioId)
                 .ToListAsync();
         }
-
-
     }
 }
+

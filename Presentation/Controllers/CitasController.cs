@@ -1,5 +1,7 @@
 ﻿using Application.DTOs.Cita;
 using Application.Interfaces;
+using Domain.Interfaces;
+using Infrastructure.Persistencia.Repositorios;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -11,11 +13,39 @@ namespace Presentation.Controllers
     {
         private readonly ICitaService _citaService;
         private readonly ILogService _logService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CitasController(ICitaService citaService)
+        public CitasController(ICitaService citaService, IUnitOfWork unitOfWork)
         {
             _citaService = citaService;
+            _unitOfWork = unitOfWork;
             _logService = Infrastructure.Servicios.LogService.Instance;
+        }
+
+        //Endpoint para obtener turnos disponibles
+        [HttpGet("turnos")]
+        public async Task<IActionResult> ObtenerTurnos()
+        {
+            try
+            {
+                var turnos = await _unitOfWork.Turnos.GetAllAsync();
+
+                //formateo fechas
+                var resultado = turnos.Select(t => new {
+                    id = t.Id,
+                    nombre = t.Nombre,
+                    horaInicio = t.HoraInicio.ToString(@"hh\:mm"), 
+                    horaFin = t.HoraFin.ToString(@"hh\:mm"),       
+                    rango = $"{t.HoraInicio:hh\\:mm} - {t.HoraFin:hh\\:mm}" 
+                }).ToList();
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError("Error obteniendo turno", ex);
+                return StatusCode(500, new { error = "Error interno del servidor" });
+            }
         }
 
         // Endpoint para generar slots segun configuracion

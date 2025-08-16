@@ -9,5 +9,8 @@ namespace Application.DTOs.Cita
 
         [Required(ErrorMessage = "La fecha y hora de la cita son obligatorias")]
         public DateTime FechaHora { get; set; }
+
+        public string SoloHora => FechaHora.ToString("HH:mm");
+        public string FechaCompleta => FechaHora.ToString("dd/MM/yyyy");
     }
 }

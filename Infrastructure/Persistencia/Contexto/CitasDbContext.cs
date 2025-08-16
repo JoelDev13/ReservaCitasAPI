@@ -130,9 +130,11 @@ namespace Infrastructure.Persistencia.Contexto
                 entity.Property(c => c.Estado)
                     .IsRequired()
                     .HasConversion<int>() // Convierte enum EstadoCita a int
-                    .HasComment("1=Confirmada, 2=Cancelada, 3=Pendiente");
+                    .HasComment("0=Ninguno, 1=Renovacion, 2=PrimeraVez, 3=Duplicado, 4=CambioCategoria\"");
 
                 entity.Property(c => c.TipoTramite)
+                    .IsRequired()
+                    .HasConversion<int>() // guarda el nombre del enum como int
                     .HasMaxLength(50)
                     .HasComment("Renovacion, PrimeraVez, Duplicado, CambioCategoria");
 
