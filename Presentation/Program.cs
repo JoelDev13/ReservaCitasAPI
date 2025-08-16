@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using ProyectoFinal.Domain.Interfaces;
 using ProyectoFinal.Infrastructure.Repositories;
 using Infrastructure.Persistencia.Repositorios.Interfaces;
+using Infrastructure.Servicios;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,24 +31,22 @@ builder.Services.AddDbContext<CitasDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 
-// Inyeccion del repositorio y UnitOfWork
+// Registro de las dependencias
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 builder.Services.AddScoped<IConfiguracionService, ConfiguracionService>();
 builder.Services.AddScoped<CitaService>();
+builder.Services.AddScoped<IAutenticacionService, ServiceAutenticacion>();
+builder.Services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();
+builder.Services.AddScoped<ICitaService, CitaService>();
 
-
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<ILogService>(provider => LogService.Instance);
 // Lee la clave JWT desde configuracion
 var claveSecreta = builder.Configuration["JWT:ClaveSecreta"]
 ?? throw new InvalidOperationException("La clave JWT no está configurada");
 // Registra tu servicio de generacion de JWT
 builder.Services.AddSingleton<IGeneradorJWT>(new GeneradorJWT(claveSecreta));
-
-
-builder.Services.AddScoped<IAutenticacionService, ServiceAutenticacion>();
-builder.Services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();
-
 
 
 // aqui convierto la cadena secreta a un arreglo de bytes
@@ -67,6 +66,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin", policy =>
+    {
+        policy.AllowAnyOrigin();
+        policy.AllowAnyMethod();
+        policy.AllowAnyHeader();
+    });
+});
+
 
 var app = builder.Build();
 
@@ -77,6 +86,8 @@ if (builder.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAnyOrigin");
 
 app.UseHttpsRedirection();
 

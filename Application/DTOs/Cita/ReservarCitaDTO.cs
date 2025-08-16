@@ -12,9 +12,12 @@ namespace Application.DTOs.Cita
         public DateTime FechaHora { get; set; } 
 
         [Required]
-        public int EstacionNumero { get; set; }
+        public int? EstacionNumero { get; set; }
 
         [Required]
         public TipoTramite TipoTramite { get; set; }
+        public int TurnoId { get; set; }
+
+
     }
 }

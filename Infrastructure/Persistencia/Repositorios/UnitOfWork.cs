@@ -13,7 +13,7 @@ namespace Infrastructure.Persistencia.Repositorios
 
         private readonly CitasDbContext _context;
 
-        private IGenericRepository<Usuario> _usuarios; 
+        private IGenericRepository<Usuario> _usuarios;
 
         private IGenericRepository<Cita> _citas;
 
@@ -28,10 +28,10 @@ namespace Infrastructure.Persistencia.Repositorios
         {
 
             _context = context;
-            
+
 
         }
-        public IGenericRepository<Usuario> Usuario => _usuarios?? new GenericRepository<Usuario>(_context);
+        public IGenericRepository<Usuario> Usuario => _usuarios ?? new GenericRepository<Usuario>(_context);
 
         public IGenericRepository<Cita> Citas => _citas ??= new GenericRepository<Cita>(_context);
 
@@ -48,6 +48,12 @@ namespace Infrastructure.Persistencia.Repositorios
 
             return await _context.SaveChangesAsync();
 
+        }
+
+        // metodo para las transacciones (para concurrencia)
+        public async Task<Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
 
         public void Dispose()

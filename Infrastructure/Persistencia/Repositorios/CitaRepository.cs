@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProyectoFinal.Infrastructure.Repositories
 {
-    public class CitaRepository : GenericRepository<Cita>, ICitaRepository
+    public class CitaRepository : GenericRepository<Cita>
     {
         public CitaRepository(CitasDbContext context) : base(context) { }
 
