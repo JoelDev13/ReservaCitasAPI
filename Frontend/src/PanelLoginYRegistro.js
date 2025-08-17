@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://localhost:7201'; 
+const API_BASE_URL = 'http://localhost:5256'; 
 
 const registroForm = document.getElementById('registroForm');
 const loginForm = document.getElementById('loginForm');
@@ -37,7 +37,8 @@ async function handleRegistro(e) {
     const userData = {
         nombre: formData.get('nombre'),
         email: formData.get('email'),
-        password: formData.get('password')
+        contrasenaHash: formData.get('password'), 
+        rolUsuario: 0 
     };
     
     try {
@@ -50,13 +51,13 @@ async function handleRegistro(e) {
         });
         
         if (response.ok) {
-            const result = await response.json();
+            const result = await response.text(); 
             alert('Usuario registrado exitosamente');
-            toggleForms('login'); // Cambia al formulario de login
-            e.target.reset(); // Limpia el  formulario
+            toggleForms('login');
+            e.target.reset();
         } else {
-            const error = await response.json();
-            alert(`Error en el registro: ${error.message || 'Error desconocido'}`);
+            const error = await response.text(); 
+            alert(`Error en el registro: ${error}`);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -71,7 +72,7 @@ async function handleLogin(e) {
     const formData = new FormData(e.target);
     const loginData = {
         email: formData.get('email'),
-        password: formData.get('password')
+        contrasenaHash: formData.get('password') 
     };
     
     try {
@@ -89,11 +90,11 @@ async function handleLogin(e) {
             // Guarda el token en localStorage
             localStorage.setItem('jwt_token', result.token);
             
-            // Muestra el  panel de administrador
+            // Muestra el panel de administrador
             showAdminPanel();
         } else {
-            const error = await response.json();
-            alert(`Error en el login: ${error.message || 'Credenciales inválidas'}`);
+            const error = await response.text();
+            alert(`Error en el login: ${error}`);
         }
     } catch (error) {
         console.error('Error:', error);
@@ -101,21 +102,22 @@ async function handleLogin(e) {
     }
 }
 
-//  panel de administrador
+// Panel de admin
 function showAdminPanel() {
-    // quita todos los formularios
+    // Oculta todos los formularios
     registroForm.classList.add('hidden');
     loginForm.classList.add('hidden');
     
+    // Muestra el panel de admin
     adminPanel.classList.remove('hidden');
 }
 
-// Verifica el estado de  la autenticacion
+// Verifica el estado de la autenticacion
 function checkAuthStatus() {
     const token = localStorage.getItem('jwt_token');
     
     if (token) {
-        // Si hay token, muestra el  panel de admin
+        // Si hay token, muestra el panel de admin
         showAdminPanel();
     }
 }
@@ -136,7 +138,7 @@ function cerrarSesion() {
     // Limpiar localStorage
     localStorage.removeItem('jwt_token');
     
-    // Oculta el  panel de admin
+    // Oculta el panel de admin
     adminPanel.classList.add('hidden');
     
     // Muestra el formulario de registro

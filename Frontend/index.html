@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,6 +62,17 @@
                 <button id="mostrarRegistro" class="text-blue-600 hover:text-blue-800 font-medium">Registrarse</button>
             </p>
         </div>
+
+        <!-- Panel de usuario-->
+        <div id="usuarioPanel" class="hidden">
+            <div class="flex items-center justify-center min-h-screen">
+                <h1 class="text-8xl font-bold text-red-600">usuario</h1>
+            </div>
+            <button id="cerrarSesionU" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                Cerrar Sesión
+            </button>
+        </div>
+    </div>
 
         <!-- Panel de Administrador -->
         <div id="adminPanel" class="hidden">
