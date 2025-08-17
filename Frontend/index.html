@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Reserva de Citas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Contenedor principal -->
+    <div id="app" class="container mx-auto px-4 py-8">
+        <!-- Formulario de Registro -->
+        <div id="registroForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Registro</h2>
+            <form id="formRegistro" class="space-y-4">
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                    <input type="password" id="password" name="password" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button type="submit" 
+                        class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                    Registrarse
+                </button>
+            </form>
+            <p class="text-center mt-4 text-sm text-gray-600">
+                ¿Ya tienes cuenta? 
+                <button id="mostrarLogin" class="text-blue-600 hover:text-blue-800 font-medium">Iniciar sesión</button>
+            </p>
+        </div>
+
+        <!-- Formulario de Login -->
+        <div id="loginForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8 hidden">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Iniciar Sesión</h2>
+            <form id="formLogin" class="space-y-4">
+                <div>
+                    <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="loginEmail" name="email" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                    <input type="password" id="loginPassword" name="password" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <button type="submit" 
+                        class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
+                    Iniciar Sesión
+                </button>
+            </form>
+            <p class="text-center mt-4 text-sm text-gray-600">
+                ¿No tienes cuenta? 
+                <button id="mostrarRegistro" class="text-blue-600 hover:text-blue-800 font-medium">Registrarse</button>
+            </p>
+        </div>
+
+        <!-- Panel de Administrador -->
+        <div id="adminPanel" class="hidden">
+            <div class="flex items-center justify-center min-h-screen">
+                <h1 class="text-8xl font-bold text-red-600">ADMIN</h1>
+            </div>
+            <button id="cerrarSesion" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                Cerrar Sesión
+            </button>
+        </div>
+    </div>
+
+    <script src="src/PanelLoginYRegistro.js"></script>
+</body>
+</html> 
