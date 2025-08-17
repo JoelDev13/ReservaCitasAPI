@@ -87,6 +87,27 @@ namespace Presentation.Controllers
             }
         }
 
+        [HttpPut("editar")]
+        public async Task<IActionResult> EditarCita([FromBody] EditarCitaDTO dto)
+        {
+            try
+            {
+                var resultado = await _citaService.EditarCitaAsync(dto);
+                if (resultado)
+                    return Ok(new { mensaje = "Cita editada exitosamente" });
+                return BadRequest(new { mensaje = "No se pudo editar la cita" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError("Error editando cita", ex);
+                return StatusCode(500, new { error = "Error interno del servidor" });
+            }
+        }
+
         [HttpPost("cancelar")]
         public async Task<IActionResult> CancelarCita([FromBody] CancelarCitaDTO dto)
         {

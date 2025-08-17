@@ -35,16 +35,18 @@ builder.Services.AddDbContext<CitasDbContext>(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IConfiguracionService, ConfiguracionService>();
-builder.Services.AddScoped<CitaService>();
+
+//
 builder.Services.AddScoped<IAutenticacionService, ServiceAutenticacion>();
 builder.Services.AddScoped<IRepositorioUsuario, RepositorioUsuario>();
 builder.Services.AddScoped<ICitaService, CitaService>();
-
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddSingleton<ILogService>(provider => LogService.Instance);
+
 // Lee la clave JWT desde configuracion
 var claveSecreta = builder.Configuration["JWT:ClaveSecreta"]
 ?? throw new InvalidOperationException("La clave JWT no está configurada");
+
 // Registra tu servicio de generacion de JWT
 builder.Services.AddSingleton<IGeneradorJWT>(new GeneradorJWT(claveSecreta));
 

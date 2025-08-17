@@ -163,6 +163,75 @@ namespace Application.Servicios
             }
         }
 
+        public async Task<bool> EditarCitaAsync(EditarCitaDTO dto)
+        {
+            try
+            {
+                // Busca la cita existente
+                var citaExistente = (await _unitOfWork.Citas.GetAllAsync())
+                    .FirstOrDefault(c => c.Id == dto.CitaId &&
+                                        c.UsuarioId == dto.UsuarioId &&
+                                        c.Estado == EstadoCita.Reservada);
+
+                if (citaExistente == null)
+                    throw new InvalidOperationException("Cita no encontrada o no se puede editar");
+
+                // Valida que se puede editar minimo 2 horas antes de la cita actual
+                if (DateTime.Now >= citaExistente.FechaHora.AddHours(-2))
+                    throw new InvalidOperationException("No se puede editar una cita con menos de 2 horas de anticipacion");
+
+                // Valida que la nueva fecha y hora tenga cupo disponible
+                var citasEnNuevoHorario = (await _unitOfWork.Citas.GetAllAsync())
+                    .Where(c => c.FechaHora == dto.NuevaFechaHora &&
+                               c.Estado != EstadoCita.Cancelada &&
+                               c.Id != dto.CitaId) 
+                    .ToList();
+
+                // Obtiene la configuracion para la nueva fecha
+                var config = (await _unitOfWork.Configuraciones.GetAllAsync())
+                    .FirstOrDefault(c => c.Fecha.Date == dto.NuevaFechaHora.Date);
+
+                if (config == null)
+                    throw new InvalidOperationException("No hay configuracion disponible para la nueva fecha");
+
+                if (citasEnNuevoHorario.Count >= config.CantidadEstaciones)
+                    throw new InvalidOperationException("No hay cupo disponible en el nuevo horario");
+
+                // Actualiza la cita
+                citaExistente.FechaHora = dto.NuevaFechaHora;
+                if (dto.NuevoTipoTramite.HasValue)
+                    citaExistente.TipoTramite = dto.NuevoTipoTramite.Value;
+
+                _unitOfWork.Citas.Update(citaExistente);
+                var cambios = await _unitOfWork.SaveChangesAsync();
+
+                if (cambios > 0)
+                {
+                    var usuario = await _unitOfWork.Usuario.GetByIdAsync(dto.UsuarioId);
+
+                    // Enviaun email de confirmacion del cambio
+                    await _emailService.EnviarConfirmacionCitaAsync(
+                        usuario.Email,
+                        usuario.Nombre,
+                        dto.NuevaFechaHora,
+                        citaExistente.EstacionNumero,
+                        "Modificada");
+
+                    // Log del cambio
+                    _logService.LogConfiguracion(
+                        $"CITA EDITADA - Usuario {dto.UsuarioId} modifico cita a {dto.NuevaFechaHora:dd/MM/yyyy HH:mm}",
+                        citaExistente.Id);
+                }
+
+                return cambios > 0;
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError($"Error editando cita {dto.CitaId} para usuario {dto.UsuarioId}", ex);
+                throw;
+            }
+        }
+
         public async Task<bool> CancelarCitaAsync(CancelarCitaDTO dto)
         {
             try
