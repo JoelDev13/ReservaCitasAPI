@@ -1,8 +1,14 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "UP5+cA2fpjn8Sl3oOQLvnhtAP2zJulcbasdhIt0fbGhO2nX1u0Zf5g0eOtE5LhM4C047TxPh9ezG7/1AVb/p8g==",
   "success": true,
   "projectFilePath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj",
+=======
+  "dgSpecHash": "GNY5ozKDRjI=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj",
+>>>>>>> Stashed changes
   "expectedPackageFiles": [],
   "logs": []
 }

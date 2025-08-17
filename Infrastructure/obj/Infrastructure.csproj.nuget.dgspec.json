@@ -1,6 +1,7 @@
 {
   "format": 1,
   "restore": {
+<<<<<<< Updated upstream
     "/home/joelito/Descargas/ReservaCitasAPI/Infrastructure/Infrastructure.csproj": {}
   },
   "projects": {
@@ -12,22 +13,53 @@
         "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj",
         "packagesPath": "/home/joelito/.nuget/packages/",
         "outputPath": "/home/joelito/Descargas/ReservaCitasAPI/Application/obj/",
+=======
+    "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Infrastructure\\Infrastructure.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\Application.csproj",
+        "projectName": "Application",
+        "projectPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\andry\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\obj\\",
+>>>>>>> Stashed changes
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
+<<<<<<< Updated upstream
           "/home/joelito/.nuget/NuGet/NuGet.Config"
+=======
+          "C:\\Users\\andry\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+>>>>>>> Stashed changes
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+<<<<<<< Updated upstream
+=======
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+>>>>>>> Stashed changes
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
+<<<<<<< Updated upstream
               "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj": {
                 "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj"
+=======
+              "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj"
+>>>>>>> Stashed changes
               }
             }
           }
@@ -36,7 +68,17 @@
           "warnAsError": [
             "NU1605"
           ]
+<<<<<<< Updated upstream
         }
+=======
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+>>>>>>> Stashed changes
       },
       "frameworks": {
         "net8.0": {
@@ -63,6 +105,7 @@
               "privateAssets": "all"
             }
           },
+<<<<<<< Updated upstream
           "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.117/PortableRuntimeIdentifierGraph.json"
         }
       }
@@ -75,14 +118,41 @@
         "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj",
         "packagesPath": "/home/joelito/.nuget/packages/",
         "outputPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/obj/",
+=======
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj",
+        "projectName": "Domain",
+        "projectPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\andry\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\obj\\",
+>>>>>>> Stashed changes
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
+<<<<<<< Updated upstream
           "/home/joelito/.nuget/NuGet/NuGet.Config"
+=======
+          "C:\\Users\\andry\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+>>>>>>> Stashed changes
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+<<<<<<< Updated upstream
+=======
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+>>>>>>> Stashed changes
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -95,7 +165,17 @@
           "warnAsError": [
             "NU1605"
           ]
+<<<<<<< Updated upstream
         }
+=======
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+>>>>>>> Stashed changes
       },
       "frameworks": {
         "net8.0": {
@@ -116,6 +196,7 @@
               "privateAssets": "all"
             }
           },
+<<<<<<< Updated upstream
           "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.117/PortableRuntimeIdentifierGraph.json"
         }
       }
@@ -128,25 +209,60 @@
         "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Infrastructure/Infrastructure.csproj",
         "packagesPath": "/home/joelito/.nuget/packages/",
         "outputPath": "/home/joelito/Descargas/ReservaCitasAPI/Infrastructure/obj/",
+=======
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Infrastructure\\Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Infrastructure\\Infrastructure.csproj",
+        "projectName": "Infrastructure",
+        "projectPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\andry\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Infrastructure\\obj\\",
+>>>>>>> Stashed changes
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
+<<<<<<< Updated upstream
           "/home/joelito/.nuget/NuGet/NuGet.Config"
+=======
+          "C:\\Users\\andry\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+>>>>>>> Stashed changes
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+<<<<<<< Updated upstream
+=======
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+>>>>>>> Stashed changes
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
+<<<<<<< Updated upstream
               "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj": {
                 "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj"
               },
               "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj": {
                 "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj"
+=======
+              "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\Application.csproj"
+              },
+              "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj"
+>>>>>>> Stashed changes
               }
             }
           }
@@ -155,7 +271,17 @@
           "warnAsError": [
             "NU1605"
           ]
+<<<<<<< Updated upstream
         }
+=======
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+>>>>>>> Stashed changes
       },
       "frameworks": {
         "net8.0": {
@@ -190,7 +316,11 @@
               "privateAssets": "all"
             }
           },
+<<<<<<< Updated upstream
           "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.117/PortableRuntimeIdentifierGraph.json"
+=======
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+>>>>>>> Stashed changes
         }
       }
     }

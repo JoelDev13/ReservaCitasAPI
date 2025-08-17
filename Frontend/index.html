@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +9,9 @@
 <body class="bg-gray-100 min-h-screen">
     <!-- Contenedor principal -->
     <div id="app" class="container mx-auto px-4 py-8">
+
         <!-- Formulario de Registro -->
-        <div id="registroForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
+        <div id="registroForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8 hidden">
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Registro</h2>
             <form id="formRegistro" class="space-y-4">
                 <div>
@@ -38,8 +40,8 @@
             </p>
         </div>
 
-        <!-- Formulario de Login -->
-        <div id="loginForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8 hidden">
+        <!-- Formulario de Login (MOSTRAR DE PRIMERO) -->
+        <div id="loginForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Iniciar Sesión</h2>
             <form id="formLogin" class="space-y-4">
                 <div>
@@ -58,21 +60,44 @@
                 </button>
             </form>
             <p class="text-center mt-4 text-sm text-gray-600">
+                ¿Olvidaste tu contraseña? 
+                <button id="mostrarRecuperar" class="text-red-600 hover:text-red-800 font-medium">Recuperar contraseña</button>
+            </p>
+            <p class="text-center mt-4 text-sm text-gray-600">
                 ¿No tienes cuenta? 
                 <button id="mostrarRegistro" class="text-blue-600 hover:text-blue-800 font-medium">Registrarse</button>
             </p>
         </div>
 
-        <!-- Panel de usuario-->
+        <!-- Recuperar contraseña -->
+        <div id="recuperarForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8 hidden">
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Recuperar Contraseña</h2>
+            <form id="formRecuperar" class="space-y-4">
+                <div>
+                    <label for="recuperarEmail" class="block text-sm font-medium text-gray-700 mb-1">Correo registrado</label>
+                    <input type="email" id="recuperarEmail" name="recuperarEmail" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+                <button type="submit" 
+                        class="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">
+                    Enviar código
+                </button>
+            </form>
+            <p class="text-center mt-4 text-sm text-gray-600">
+                ¿Ya tienes tu contraseña? 
+                <button id="volverLogin" class="text-blue-600 hover:text-blue-800 font-medium">Volver al login</button>
+            </p>
+        </div>
+
+        <!-- Panel de Usuario -->
         <div id="usuarioPanel" class="hidden">
             <div class="flex items-center justify-center min-h-screen">
-                <h1 class="text-8xl font-bold text-red-600">usuario</h1>
+                <h1 class="text-8xl font-bold text-blue-600">USUARIO</h1>
             </div>
             <button id="cerrarSesionU" class="absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
                 Cerrar Sesión
             </button>
         </div>
-    </div>
 
         <!-- Panel de Administrador -->
         <div id="adminPanel" class="hidden">
@@ -85,6 +110,18 @@
         </div>
     </div>
 
-    <script src="src/PanelLoginYRegistro.js"></script>
+    <script>
+        // Captura del formulario de recuperar contraseña
+        document.getElementById("formRecuperar").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evita recargar la página
+            let correo = document.getElementById("recuperarEmail").value;
+            if (correo) {
+                alert("✅ Se envió con éxito a: " + correo);
+            } else {
+                alert("⚠️ Por favor ingresa un correo válido.");
+            }
+        });
+    </script>
 </body>
-</html> 
+</html>
+
