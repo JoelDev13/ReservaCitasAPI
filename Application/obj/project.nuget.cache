@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ZxJILl4lxuU=",
+  "dgSpecHash": "swLSCLqilg2n8kKb00+fF3G4gKXr8adPwCWZsdKVwjcT7l97TJAbD84oBRWokHU/SVJlcdkdeUmerezvyNzSGw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\Application.csproj",
+  "projectFilePath": "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\la\\.nuget\\packages\\bcrypt.net-next\\4.0.2\\bcrypt.net-next.4.0.2.nupkg.sha512"
+    "/home/joelito/.nuget/packages/bcrypt.net-next/4.0.2/bcrypt.net-next.4.0.2.nupkg.sha512"
   ],
   "logs": []
 }

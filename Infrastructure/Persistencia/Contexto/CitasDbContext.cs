@@ -43,6 +43,7 @@ namespace Infrastructure.Persistencia.Contexto
                  entity.HasIndex(u => u.Cedula)
                        .IsUnique()
                        .HasDatabaseName("IX_Usuario_Cedula");
+                       
 
                 entity.Property(u => u.ContrasenaHash)
                     .IsRequired()

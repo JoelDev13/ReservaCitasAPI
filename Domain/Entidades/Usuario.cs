@@ -22,7 +22,7 @@ namespace Domain.Entidades
         [Required(ErrorMessage = "La cedula es obligatoria")]
         [StringLength(20, MinimumLength = 11, ErrorMessage = "La cedula debe tener al menos 11 dígitos")]
         [RegularExpression(@"^\d{11,}$", ErrorMessage = "La cedula debe contener solo numeros y tener al menos 11 digitos")]
-        public string Cedula { get; set; } = string.Empty;
+        public string? Cedula { get; set; } = string.Empty;
 
         public RolUsuario Rol { get; set; } = RolUsuario.Usuario;
 
