@@ -1,33 +1,36 @@
 {
   "format": 1,
   "restore": {
-    "/home/joelito/Descargas/ReservaCitasAPI/Infrastructure/Infrastructure.csproj": {}
+    "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Infrastructure\\Infrastructure.csproj": {}
   },
   "projects": {
-    "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj": {
+    "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj",
+        "projectUniqueName": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\Application.csproj",
         "projectName": "Application",
-        "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj",
-        "packagesPath": "/home/joelito/.nuget/packages/",
-        "outputPath": "/home/joelito/Descargas/ReservaCitasAPI/Application/obj/",
+        "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\Application.csproj",
+        "packagesPath": "C:\\Users\\la\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/joelito/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\la\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj": {
-                "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj"
+              "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj"
               }
             }
           }
@@ -36,6 +39,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -63,26 +71,29 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.119/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj": {
+    "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj",
+        "projectUniqueName": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj",
-        "packagesPath": "/home/joelito/.nuget/packages/",
-        "outputPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/obj/",
+        "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj",
+        "packagesPath": "C:\\Users\\la\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/joelito/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\la\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -95,6 +106,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -116,37 +132,40 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.119/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/home/joelito/Descargas/ReservaCitasAPI/Infrastructure/Infrastructure.csproj": {
+    "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Infrastructure\\Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/joelito/Descargas/ReservaCitasAPI/Infrastructure/Infrastructure.csproj",
+        "projectUniqueName": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Infrastructure\\Infrastructure.csproj",
         "projectName": "Infrastructure",
-        "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Infrastructure/Infrastructure.csproj",
-        "packagesPath": "/home/joelito/.nuget/packages/",
-        "outputPath": "/home/joelito/Descargas/ReservaCitasAPI/Infrastructure/obj/",
+        "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Infrastructure\\Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\la\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/joelito/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\la\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj": {
-                "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj"
+              "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\Application.csproj": {
+                "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\Application.csproj"
               },
-              "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj": {
-                "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj"
+              "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj": {
+                "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj"
               }
             }
           }
@@ -155,6 +174,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -190,7 +214,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.119/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

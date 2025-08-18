@@ -52,22 +52,36 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
         }
         
         const data = await res.json(); // RespuestaLoginDTO
-        
+
         // Guardar token
         localStorage.setItem('jwt_token', data.token);
-        
-        // Decodificar JWT para obtener rol
+
+        // Decodificar JWT y extraer rol/usuario
         const payload = JSON.parse(atob(data.token.split('.')[1]));
-        const rol = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || payload['role'];
-        
-        // Guardar rol en localStorage para uso futuro
-        localStorage.setItem('user_role', rol === '0' ? 'Usuario' : 'Administrador');
-        
+        const rawRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] 
+            || payload['role'] 
+            || data.rol 
+            || data.role 
+            || data.rolUsuario;
+
+        // Normalizar a string numérica: "0" usuario, "1" admin
+        const roleNum = (rawRole === 1 || rawRole === '1' || rawRole === 'Administrador') ? '1' : '0';
+        localStorage.setItem('user_role', roleNum);
+
+        // Intentar persistir el id de usuario para 'mis citas'
+        const userId = data.usuarioId 
+            || data.userId 
+            || data.idUsuario 
+            || payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] 
+            || payload['nameid'] 
+            || payload['sub'];
+        if (userId) localStorage.setItem('user_id', String(userId));
+
         mostrarNotificacion('¡Login exitoso!', 'success');
         
         // Pequeño delay para mostrar el mensaje de éxito
         setTimeout(() => {
-            redirigirSegunRol(rol);
+            redirigirSegunRol(roleNum);
         }, 1000);
         
     } catch (err) {
@@ -171,10 +185,10 @@ function mostrarRecuperar() {
 }
 
 function redirigirSegunRol(rol) {
-    if (rol === 0 || rol === 'Usuario') {
+    if (rol === 0 || rol === '0' || rol === 'Usuario') {
         // Redirigir al panel de usuario
         window.location.href = 'src/PanelUsuario.html';
-    } else if (rol === 1 || rol === 'Administrador') {
+    } else if (rol === 1 || rol === '1' || rol === 'Administrador') {
         // Redirigir al panel de administrador
         window.location.href = 'src/PanelAdmin.html';
     } else {
@@ -211,7 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 mostrarNotificacion('Sesión activa encontrada, redirigiendo...', 'info');
                 setTimeout(() => {
-                    redirigirSegunRol(rol);
+                    // Normalizar rol por si viene como texto
+                    const roleNum = (rol === 1 || rol === '1' || rol === 'Administrador') ? '1' : '0';
+                    redirigirSegunRol(roleNum);
                 }, 1000);
             }
             
@@ -300,13 +316,13 @@ function verificarAccesoPanel() {
     const userRole = localStorage.getItem('user_role');
     
     // Si estamos en una pagina de panel sin token, redirigir a login
-    if (window.location.pathname.includes('panel-') && !token) {
+    if (window.location.pathname.toLowerCase().includes('panel') && !token) {
         window.location.href = '../index.html';
         return false;
     }
     
     // Verificar rol específico para cada panel
-    if (window.location.pathname.includes('panel-usuario.html') && userRole !== 'Usuario') {
+    if (window.location.pathname.includes('PanelUsuario.html') && userRole !== '0' && userRole !== 'Usuario') {
         mostrarNotificacion('Acceso no autorizado', 'error');
         setTimeout(() => {
             window.location.href = '../index.html';
@@ -314,7 +330,7 @@ function verificarAccesoPanel() {
         return false;
     }
     
-    if (window.location.pathname.includes('panel-admin.html') && userRole !== 'Administrador') {
+    if (window.location.pathname.includes('PanelAdmin.html') && userRole !== '1' && userRole !== 'Administrador') {
         mostrarNotificacion('Acceso no autorizado', 'error');
         setTimeout(() => {
             window.location.href = '../index.html';

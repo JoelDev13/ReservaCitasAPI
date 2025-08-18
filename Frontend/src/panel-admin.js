@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5256';
+const API_BASE_URL = 'http://localhost:5256/api';
 
 // Variables globales
 let configuracionActual = null;
@@ -16,11 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
 // 🔹 Verificar rol y token
 function verificarAutenticacionAdmin() {
     const token = localStorage.getItem('jwt_token');
-    const userRole = localStorage.getItem('user_role'); // guardado como número (0 o 1)
+    const userRole = localStorage.getItem('user_role'); // guardado como "0" o "1"
 
     if (!token || userRole !== "1") {
         // Si no es admin => vuelve al login
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
         return;
     }
 
@@ -45,6 +45,7 @@ async function inicializarPanelAdmin() {
     try {
         await cargarDashboardStats();
         await cargarConfiguracionesActivas();
+        // Este endpoint puede no existir aún; se ignora error en catch interno
         await cargarCitasRecientes();
         await cargarTurnos();
         cargarSystemLogs();
@@ -68,6 +69,62 @@ function setupEventListeners() {
 
     // Filtros
     setupFiltrosTabla();
+}
+
+// Placeholders para funciones de filtros (no-op si no existen elementos)
+function setupFiltrosTabla() {}
+
+// ===================== Datos del dashboard =====================
+async function cargarDashboardStats() {
+    // Sin endpoint específico; se muestran placeholders seguros
+    const citasHoy = document.getElementById('citasHoy');
+    if (citasHoy) citasHoy.textContent = '-';
+    const cupos = document.getElementById('cuposDisponibles');
+    if (cupos) cupos.textContent = '-';
+}
+
+// ===================== Configuraciones activas =====================
+async function cargarConfiguracionesActivas() {
+    try {
+        const resp = await fetch(`${API_BASE_URL}/Configuraciones/activas`, { headers: getAuthHeaders() });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        configuracionActual = Array.isArray(data) && data.length > 0 ? data[0] : null;
+        // Actualizar dashboard básico
+        const cupos = document.getElementById('cuposDisponibles');
+        if (cupos) cupos.textContent = String(Array.isArray(data) ? data.length : 0);
+    } catch {}
+}
+
+// ===================== Turnos =====================
+async function cargarTurnos() {
+    try {
+        await fetch(`${API_BASE_URL}/Citas/turnos`, { headers: getAuthHeaders() });
+    } catch {}
+}
+
+// ===================== Logs =====================
+function cargarSystemLogs() {
+    // Aun sin endpoint de logs centralizado en frontend
+}
+
+// ===================== Generar slots =====================
+async function generarSlotsDialog() {
+    if (!configuracionActual || !configuracionActual.id) {
+        showNotification('No hay configuración seleccionada', 'warning');
+        return;
+    }
+    try {
+        const resp = await fetch(`${API_BASE_URL}/Citas/generar-slots/${configuracionActual.id}`, {
+            method: 'POST',
+            headers: getAuthHeaders()
+        });
+        if (!resp.ok) throw new Error(await resp.text());
+        showNotification('Slots generados correctamente', 'success');
+    } catch (e) {
+        showNotification('Error generando slots', 'error');
+        console.error(e);
+    }
 }
 
 // ============================================================================
