@@ -74,63 +74,35 @@
     ]
   },
   "packageFolders": {
-<<<<<<< Updated upstream
-    "/home/joelito/.nuget/packages/": {}
-=======
-    "C:\\Users\\andry\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
->>>>>>> Stashed changes
+    "C:\\Users\\la\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-<<<<<<< Updated upstream
-      "projectUniqueName": "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj",
+      "projectUniqueName": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\Application.csproj",
       "projectName": "Application",
-      "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Application/Application.csproj",
-      "packagesPath": "/home/joelito/.nuget/packages/",
-      "outputPath": "/home/joelito/Descargas/ReservaCitasAPI/Application/obj/",
-=======
-      "projectUniqueName": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\Application.csproj",
-      "projectName": "Application",
-      "projectPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\Application.csproj",
-      "packagesPath": "C:\\Users\\andry\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Application\\obj\\",
->>>>>>> Stashed changes
+      "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\Application.csproj",
+      "packagesPath": "C:\\Users\\la\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-<<<<<<< Updated upstream
-        "/home/joelito/.nuget/NuGet/NuGet.Config"
-=======
-        "C:\\Users\\andry\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\la\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
->>>>>>> Stashed changes
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-<<<<<<< Updated upstream
-=======
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
->>>>>>> Stashed changes
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-<<<<<<< Updated upstream
-            "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj": {
-              "projectPath": "/home/joelito/Descargas/ReservaCitasAPI/Domain/Domain.csproj"
-=======
-            "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj": {
-              "projectPath": "C:\\Users\\andry\\OneDrive\\Escritorio\\ReservaCitasAPI\\Domain\\Domain.csproj"
->>>>>>> Stashed changes
+            "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj": {
+              "projectPath": "C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Domain\\Domain.csproj"
             }
           }
         }
@@ -139,17 +111,12 @@
         "warnAsError": [
           "NU1605"
         ]
-<<<<<<< Updated upstream
-      }
-=======
       },
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
->>>>>>> Stashed changes
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -176,12 +143,16 @@
             "privateAssets": "all"
           }
         },
-<<<<<<< Updated upstream
-        "runtimeIdentifierGraphPath": "/usr/lib64/dotnet/sdk/8.0.117/PortableRuntimeIdentifierGraph.json"
-=======
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
->>>>>>> Stashed changes
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problema al leer el archivo de caché C:\\Users\\la\\Desktop\\Programacion\\Itla\\Programacion 2\\ReservaCitasAPI\\Application\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }

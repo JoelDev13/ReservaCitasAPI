@@ -109,19 +109,6 @@
             </button>
         </div>
     </div>
-
-    <script>
-        // Captura del formulario de recuperar contraseña
-        document.getElementById("formRecuperar").addEventListener("submit", function(event) {
-            event.preventDefault(); // Evita recargar la página
-            let correo = document.getElementById("recuperarEmail").value;
-            if (correo) {
-                alert("✅ Se envió con éxito a: " + correo);
-            } else {
-                alert("⚠️ Por favor ingresa un correo válido.");
-            }
-        });
-    </script>
+    <script src="src/PanelLoginYRegistro.js"></script>
 </body>
 </html>
-
