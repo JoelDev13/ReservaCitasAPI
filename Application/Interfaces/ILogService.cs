@@ -7,5 +7,6 @@
         void LogLogin(string email);
         void LogError(string mensaje, Exception ex = null);
         void LogConfiguracion(string accion, int configuracionId);
+        Task<IEnumerable<string>> LeerLogsAsync();
     }
 }

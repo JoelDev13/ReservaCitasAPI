@@ -28,33 +28,6 @@
 
     <!-- Contenido Principal -->
     <main class="container mx-auto px-6 py-8">
-        <!-- Dashboard Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
-                <div class="flex items-center">
-                    <div class="p-3 bg-blue-100 rounded-full">
-                        <i class="fas fa-calendar text-blue-600 text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600">Citas Hoy</p>
-                        <p class="text-2xl font-bold text-gray-800" id="citasHoy">-</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
-                <div class="flex items-center">
-                    <div class="p-3 bg-green-100 rounded-full">
-                        <i class="fas fa-clock text-green-600 text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600">Cupos Disponibles</p>
-                        <p class="text-2xl font-bold text-gray-800" id="cuposDisponibles">-</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Secciones Principales -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Configuracion del Sistema -->
@@ -68,8 +41,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Fechas Disponibles</label>
                         <div class="flex space-x-2">
-                            <input type="date" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <input type="date" id="fechaHabilitada" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button id="btnAgregarFecha" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 <i class="fas fa-plus mr-2"></i>Agregar
                             </button>
                         </div>
@@ -79,34 +52,40 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Turnos</label>
                         <div class="grid grid-cols-2 gap-4">
                             <label class="flex items-center">
-                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">
+                                <input type="checkbox" id="turnoMatutino" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">
                                 <span class="text-sm text-gray-700">Matutino (6:00 AM - 12:00 PM)</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">
+                                <input type="checkbox" id="turnoVespertino" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2">
                                 <span class="text-sm text-gray-700">Vespertino (1:00 PM - 7:00 PM)</span>
                             </label>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Duración de Citas</label>
-                        <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option>15 minutos</option>
-                            <option>30 minutos</option>
-                            <option>45 minutos</option>
-                            <option>1 hora</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Duración de Citas (minutos)</label>
+                        <select id="duracionCitas" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="15">15 minutos</option>
+                            <option value="30" selected>30 minutos</option>
+                            <option value="45">45 minutos</option>
+                            <option value="60">1 hora</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Estaciones de Trabajo</label>
                         <div class="flex space-x-2">
-                            <input type="number" placeholder="Número de estaciones" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <button class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <input type="number" id="cantidadEstaciones" placeholder="Número de estaciones" value="4" min="1" max="10" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <button id="btnGuardarEstaciones" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 <i class="fas fa-save mr-2"></i>Guardar
                             </button>
                         </div>
+                    </div>
+
+                    <div class="pt-4">
+                        <button id="btnGenerarSlots" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-colors">
+                            <i class="fas fa-magic mr-2"></i>Generar Horarios Automáticamente
+                        </button>
                     </div>
                 </div>
             </div>
@@ -122,96 +101,41 @@
                     <!-- Logs del Sistema -->
                     <div>
                         <h3 class="text-sm font-medium text-gray-700 mb-3">Logs del Sistema</h3>
-                        <div class="bg-gray-50 rounded-lg p-3 max-h-32 overflow-y-auto">
-                            <!-- Los logs lo cargare dinamicamente desde el backend -->
+                        <div class="bg-gray-50 rounded-lg p-3 max-h-64 overflow-y-auto">
                             <div id="systemLogs" class="text-xs space-y-1">
                                 <!-- Los logs se insertarán aquí via JavaScript -->
-                                <!-- 
-                                Estructura esperada para cada log:
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-[COLOR]-600">[ICONO]</span>
-                                    <span class="text-gray-600">[TIMESTAMP] - [MENSAJE]</span>
-                                </div>
-                                
-                                Colores disponibles:
-                                - text-green-600 para INFO/SUCCESS
-                                - text-blue-600 para INFO
-                                - text-yellow-600 para WARNING
-                                - text-red-600 para ERROR
-                                -->
                             </div>
                         </div>
+                        <button id="btnActualizarLogs" class="mt-2 text-sm text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-sync-alt mr-1"></i>Actualizar Logs
+                        </button>
+                    </div>
+
+                    <!-- Estado de la Configuración -->
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Estado de la Configuración</h3>
+                        <div id="estadoConfiguracion" class="text-sm text-gray-600">
+                            <!-- Se mostrará el estado actual de la configuración -->
+                        </div>
+                    </div>
+
+                    <!-- Configuraciones Activas -->
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-700 mb-3">Configuraciones Activas</h3>
+                        <div id="configuracionesActivas" class="space-y-2">
+                            <!-- Se mostrarán las configuraciones activas -->
+                        </div>
+                        <button id="btnActualizarConfiguraciones" class="mt-2 text-sm text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-sync-alt mr-1"></i>Actualizar Configuraciones
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Tabla de Citas Recientes -->
-        <div class="mt-8 bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-800">Citas Recientes</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trámite</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="citasTableBody">
-                        <!-- Las citas se cargarán dinamicamente desde el backend -->
-                        <!-- 
-                        Estructura esperada para cada cita:
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="h-10 w-10 rounded-full bg-[COLOR]-100 flex items-center justify-center">
-                                        <span class="text-[COLOR]-600 font-medium">[INICIALES]</span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">[NOMBRE_COMPLETO]</div>
-                                        <div class="text-sm text-gray-500">[EMAIL]</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-[COLOR]-100 text-[COLOR]-800">
-                                    [TIPO_TRAMITE]
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[FECHA]</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">[HORA]</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-[COLOR]-100 text-[COLOR]-800">
-                                    [ESTADO]
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button class="text-blue-600 hover:text-blue-900 mr-3" onclick="editarCita([ID])">Editar</button>
-                                <button class="text-red-600 hover:text-red-900" onclick="cancelarCita([ID])">Cancelar</button>
-                            </td>
-                        </tr>
-                        
-                        Tipos de Trámite disponibles:
-                        - Renovación
-                        - PrimeraVez
-                        - Duplicado
-                        - CambioDeCategoria
-                        
-                        Estados disponibles:
-                        - Confirmada
-                        - Cancelada
-                        - Pendiente
-                        - Reservada
-                        -->
-                    </tbody>
-                </table>
-            </div>
+        <!-- Notificaciones del Sistema -->
+        <div id="notificaciones" class="mt-8">
+            <!-- Las notificaciones se mostrarán aquí -->
         </div>
     </main>
 
@@ -223,20 +147,7 @@
             </div>
         </div>
     </footer>
-    <script src="panel-admin.js"></script>
 
-    <!-- 
-    
-    ESTRUCTURA DE DATOS ESPERADA:
-    - Tipos de Trámite: Renovación, PrimeraVez, Duplicado, CambioDeCategoria
-    - Estados: Confirmada, Cancelada, Pendiente, Reservada
-    
-    REGLAS DE NEGOCIO A IMPLEMENTAR:
-    - No se permiten reservas fuera de las fechas y horarios configurados
-    - Cada usuario puede tener solo una cita activa por día
-    - El sistema debe manejar la concurrencia para evitar sobrecupos
-    
-    
-    -->
+    <script src="panel-admin.js"></script>
 </body>
 </html>

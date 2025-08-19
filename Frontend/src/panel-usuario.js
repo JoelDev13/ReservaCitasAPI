@@ -68,44 +68,44 @@ document.querySelectorAll('.tramite-option').forEach(option => {
         this.classList.remove('border-gray-200');
         this.classList.add('border-blue-500', 'bg-blue-50');
         
-        datosReserva.tramiteId = this.dataset.tramiteId;
+        datosReserva.tramiteId = parseInt(this.dataset.tramiteId);
         datosReserva.tramiteNombre = this.dataset.tramiteNombre;
         datosReserva.tramiteDuracion = parseInt(this.dataset.duracion);
         
-        mostrarInfoTramite();
         document.getElementById('btnSiguiente').classList.remove('hidden');
     });
 });
-
-function mostrarInfoTramite() {
-    const nombreEl = document.getElementById('tramite-nombre');
-    const duracionEl = document.getElementById('tramite-duracion');
-    const iconEl = document.getElementById('tramite-icon');
-    const infoEl = document.getElementById('info-tramite-seleccionado');
-
-    nombreEl.textContent = datosReserva.tramiteNombre;
-    duracionEl.textContent = `Duración estimada: ${datosReserva.tramiteDuracion} minutos`;
-
-    const iconos = {
-        '1': 'fa-sync-alt',        // Renovacion
-        '2': 'fa-plus-circle',    // Primera vez
-        '3': 'fa-copy',           // Duplicado
-        '4': 'fa-exchange-alt'    // Cambio de categoría
-    };
-    
-    iconEl.className = `fas ${iconos[datosReserva.tramiteId] || 'fa-clipboard-list'} text-blue-600 text-2xl`;
-    infoEl.classList.remove('hidden');
-}
 
 // ==========================
 // NAVEGACIÓN
 // ==========================
 document.getElementById('btnSiguiente').addEventListener('click', function() {
     if (pasoActual < 5) {
-        if (pasoActual === 1) cargarFechasDisponibles();
-        else if (pasoActual === 2) cargarTurnosDisponibles();
-        else if (pasoActual === 3) cargarHorariosDisponibles();
-        else if (pasoActual === 4) mostrarResumen();
+        if (pasoActual === 1) {
+            if (!datosReserva.tramiteId) {
+                showNotification('Por favor selecciona un trámite', 'warning');
+                return;
+            }
+            cargarFechasDisponibles();
+        } else if (pasoActual === 2) {
+            if (!datosReserva.fecha) {
+                showNotification('Por favor selecciona una fecha', 'warning');
+                return;
+            }
+            cargarTurnosDisponibles();
+        } else if (pasoActual === 3) {
+            if (!datosReserva.turnoId) {
+                showNotification('Por favor selecciona un turno', 'warning');
+                return;
+            }
+            cargarHorariosDisponibles();
+        } else if (pasoActual === 4) {
+            if (!datosReserva.hora) {
+                showNotification('Por favor selecciona una hora', 'warning');
+                return;
+            }
+            mostrarResumen();
+        }
 
         mostrarPaso(pasoActual + 1);
     }
@@ -179,20 +179,25 @@ document.addEventListener('DOMContentLoaded', () => {
 async function cargarFechasDisponibles() {
     const cont = document.getElementById('fechasDisponibles');
     if (!cont) return;
-    cont.innerHTML = '<div class="col-span-full text-center text-gray-500">Cargando fechas...</div>';
+    cont.innerHTML = '<div class="col-span-full text-center text-gray-500">Cargando fechas disponibles...</div>';
 
     try {
-        const resp = await fetch(`${API_BASE_URL}/Configuraciones/activas`, { headers: getAuthHeaders() });
+        const resp = await fetch(`${API_BASE_URL}/Configuraciones/fechas-disponibles`, { headers: getAuthHeaders() });
         if (!resp.ok) throw new Error('No se pudieron cargar las fechas');
-        const configs = await resp.json();
+        const fechas = await resp.json();
 
-        // Extraer fechas únicas (propiedad flexible)
-        const fechas = Array.from(new Set((configs || []).map(c => c.fecha || c.fechaHabilitada || c.dia || c.date)));
+        if (!fechas || fechas.length === 0) {
+            cont.innerHTML = '<div class="col-span-full text-center text-red-500">No hay fechas disponibles configuradas</div>';
+            return;
+        }
+
         cont.innerHTML = fechas.map(f => {
-            const iso = new Date(f).toISOString().substring(0,10);
+            const turnosInfo = f.turnos.map(t => `${t.duracion}min, ${t.estaciones} estaciones`).join(' | ');
             return `
-                <button data-fecha="${iso}" class="px-4 py-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition">
-                    <span class="block font-medium text-gray-800">${formatoFechaCorta(iso)}</span>
+                <button data-fecha="${f.fecha}" class="p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition text-left">
+                    <div class="font-medium text-gray-800">${f.fechaFormateada}</div>
+                    <div class="text-sm text-gray-500">${f.turnos.length} turno(s) disponible(s)</div>
+                    <div class="text-xs text-gray-400">${turnosInfo}</div>
                 </button>
             `;
         }).join('');
@@ -207,7 +212,7 @@ async function cargarFechasDisponibles() {
             });
         });
     } catch (e) {
-        cont.innerHTML = '<div class="col-span-full text-center text-red-500">Error cargando fechas</div>';
+        cont.innerHTML = '<div class="col-span-full text-center text-red-500">Error cargando fechas disponibles</div>';
         console.error(e);
     }
 }
@@ -223,7 +228,12 @@ async function cargarTurnosDisponibles() {
         if (!resp.ok) throw new Error('No se pudieron cargar los turnos');
         const turnos = await resp.json();
 
-        cont.innerHTML = (turnos || []).map(t => `
+        if (!turnos || turnos.length === 0) {
+            cont.innerHTML = '<div class="col-span-full text-center text-red-500">No hay turnos disponibles</div>';
+            return;
+        }
+
+        cont.innerHTML = turnos.map(t => `
             <button data-turno="${t.id}" data-nombre="${t.nombre}" class="p-4 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition text-left">
                 <div class="text-gray-800 font-semibold">${t.nombre}</div>
                 <div class="text-gray-500 text-sm">${t.rango || `${t.horaInicio} - ${t.horaFin}`}</div>
@@ -252,20 +262,38 @@ async function cargarHorariosDisponibles() {
 
     cont.innerHTML = '<div class="col-span-full text-center text-gray-500">Cargando horarios...</div>';
     try {
-        const params = new URLSearchParams({ fecha: datosReserva.fecha, turnoId: String(datosReserva.turnoId) });
-        const resp = await fetch(`${API_BASE_URL}/Citas/horarios-disponibles?${params.toString()}`, { headers: getAuthHeaders() });
+        const params = new URLSearchParams({ 
+            fecha: datosReserva.fecha, 
+            turnoId: String(datosReserva.turnoId) 
+        });
+        
+        const resp = await fetch(`${API_BASE_URL}/Citas/horarios-disponibles?${params.toString()}`, { 
+            headers: getAuthHeaders() 
+        });
+        
         if (!resp.ok) throw new Error('No se pudieron cargar los horarios');
         const horarios = await resp.json();
 
-        cont.innerHTML = (horarios || []).map(h => {
-            const hora = h.hora || h.horario || h; // tolerante a distintos formatos
-            const cupos = h.cuposDisponibles ?? h.capacidadDisponible ?? h.disponibles;
-            const disabled = h.disponible === false || (typeof cupos === 'number' && cupos <= 0);
+        if (!horarios || horarios.length === 0) {
+            cont.innerHTML = '<div class="col-span-full text-center text-red-500">No hay horarios disponibles</div>';
+            return;
+        }
+
+        cont.innerHTML = horarios.map(h => {
+            const hora = h.fechaHora || h.hora || h.horario || h;
+            const cuposDisponibles = h.estacionesDisponibles ?? h.cuposDisponibles ?? h.capacidadDisponible ?? h.disponibles ?? 0;
+            const cuposTotales = h.estacionesTotales ?? h.capacidadTotal ?? 4;
+            const disabled = cuposDisponibles === 0;
+            
+            const estadoCupos = disabled ? 'LLENO' : `${cuposDisponibles}/${cuposTotales} disponibles`;
+            const colorEstado = disabled ? 'text-red-500' : cuposDisponibles <= 1 ? 'text-orange-500' : 'text-green-500';
+            
             return `
                 <button data-hora="${hora}" ${disabled ? 'disabled' : ''}
-                        class="px-4 py-3 rounded-lg border ${disabled ? 'bg-gray-100 text-gray-400 border-gray-200' : 'border-gray-200 hover:border-blue-500 hover:bg-blue-50'} transition">
-                    <div class="font-medium">${formatoHora(hora)}</div>
-                    ${typeof cupos === 'number' ? `<div class="text-xs text-gray-500">Cupos: ${cupos}</div>` : ''}
+                        class="p-3 rounded-lg border ${disabled ? 'bg-red-50 text-red-400 border-red-200 cursor-not-allowed' : 'border-gray-200 hover:border-blue-500 hover:bg-blue-50'} transition text-left">
+                    <div class="font-medium text-gray-800">${formatoHora(hora)}</div>
+                    <div class="text-xs ${colorEstado} font-medium">${estadoCupos}</div>
+                    ${disabled ? '<div class="text-xs text-red-400 mt-1">No disponible</div>' : ''}
                 </button>`;
         }).join('');
 
@@ -301,37 +329,60 @@ document.getElementById('btnConfirmarReserva').addEventListener('click', confirm
 async function confirmarReserva() {
     const userId = localStorage.getItem('user_id');
     if (!userId) {
-        alert('No se encontró el usuario. Inicie sesión nuevamente.');
+        showNotification('No se encontró el usuario. Inicie sesión nuevamente.', 'error');
         return;
     }
 
     const payload = {
         usuarioId: parseInt(userId),
-        fecha: datosReserva.fecha,
+        fechaHora: datosReserva.fechaHora,
         turnoId: datosReserva.turnoId,
-        hora: formatoHora(datosReserva.hora),
-        tipoTramite: parseInt(datosReserva.tramiteId)
+        tipoTramite: datosReserva.tramiteId
     };
 
     const btn = document.getElementById('btnConfirmarReserva');
     const old = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Reservando...';
     btn.disabled = true;
+    
     try {
         const resp = await fetch(`${API_BASE_URL}/Citas/reservar`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(payload)
         });
+        
         if (!resp.ok) {
             const msg = await resp.text();
-            throw new Error(msg || 'No se pudo reservar');
+            throw new Error(msg || 'No se pudo reservar la cita');
         }
+        
         // Éxito
-        alert('Cita reservada exitosamente');
-        cargarMisCitas();
+        showNotification('¡Cita reservada exitosamente! Revisa tu correo para la confirmación.', 'success');
+        
+        // Limpiar datos y volver al inicio
+        datosReserva = {
+            tramiteId: null,
+            tramiteNombre: '',
+            tramiteDuracion: 0,
+            fecha: null,
+            turnoId: null,
+            turnoNombre: '',
+            hora: null,
+            fechaHora: null
+        };
+        
+        // Actualizar mis citas
+        await cargarMisCitas();
+        
+        // Volver al primer paso después de un delay
+        setTimeout(() => {
+            mostrarPaso(1);
+            document.getElementById('btnSiguiente').classList.add('hidden');
+        }, 2000);
+        
     } catch (e) {
-        alert(`Error: ${e.message}`);
+        showNotification(`Error: ${e.message}`, 'error');
     } finally {
         btn.innerHTML = old;
         btn.disabled = false;
@@ -345,30 +396,52 @@ async function cargarMisCitas() {
     const userId = localStorage.getItem('user_id');
     const cont = document.getElementById('listaCitas');
     if (!userId || !cont) return;
+    
     cont.innerHTML = `<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i></div>`;
 
     try {
         const resp = await fetch(`${API_BASE_URL}/Citas/mis-citas/${userId}`, { headers: getAuthHeaders() });
         if (!resp.ok) throw new Error('No se pudieron cargar tus citas');
         const citas = await resp.json();
+        
         if (!citas || citas.length === 0) {
             cont.innerHTML = `<div class="text-center py-8 text-gray-600">No tienes citas registradas.</div>`;
             return;
         }
+        
         cont.innerHTML = citas.map(c => {
             const fecha = new Date(c.fechaHora || `${c.fecha}T${c.hora || '00:00'}`);
             const estado = c.estado || 'Reservada';
+            const tramiteNombre = c.tramiteNombre || mapTramite(c.tipoTramite) || 'Trámite';
+            
+            // Verifica si se puede cancelar (minimo 2 horas antes)
+            const ahora = new Date();
+            const puedeCancelar = estado !== 'Cancelada' && 
+                                 fecha > ahora && 
+                                 fecha.getTime() - ahora.getTime() > 2 * 60 * 60 * 1000; // 2 horas
+            
             return `
                 <div class="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
                     <div>
-                        <div class="text-gray-800 font-semibold">${c.tramiteNombre || mapTramite(c.tipoTramite) || 'Trámite'}</div>
+                        <div class="text-gray-800 font-semibold">${tramiteNombre}</div>
                         <div class="text-gray-600 text-sm">${fecha.toLocaleDateString()} - ${fecha.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div>
+                        <div class="text-gray-500 text-xs">Estación: ${c.estacionNumero || 'N/A'}</div>
+                        ${!puedeCancelar && estado !== 'Cancelada' ? '<div class="text-xs text-orange-500 mt-1">⚠️ Solo se puede cancelar hasta 2 horas antes de la cita</div>' : ''}
                     </div>
-                    <span class="text-xs px-2 py-1 rounded-full ${estado==='Cancelada'?'bg-red-100 text-red-800':estado==='Confirmada'?'bg-green-100 text-green-800':'bg-blue-100 text-blue-800'}">${estado}</span>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs px-2 py-1 rounded-full ${estado==='Cancelada'?'bg-red-100 text-red-800':estado==='Confirmada'?'bg-green-100 text-green-800':'bg-blue-100 text-blue-800'}">${estado}</span>
+                        ${puedeCancelar ? `
+                            <button onclick="cancelarCita('${c.fechaHora || fecha.toISOString()}', ${c.id})" 
+                                    class="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors">
+                                <i class="fas fa-times mr-1"></i>Cancelar
+                            </button>
+                        ` : ''}
+                    </div>
                 </div>`;
         }).join('');
+        
     } catch (e) {
-        cont.innerHTML = `<div class="text-center py-8 text-red-500">Error cargando citas</div>`;
+        cont.innerHTML = `<div class="text-center py-8 text-red-500">Error cargando citas: ${e.message}</div>`;
     }
 }
 
@@ -376,8 +449,71 @@ function mapTramite(t) {
     switch (t) {
         case 1: return 'Renovación de Licencia';
         case 2: return 'Primera Licencia';
-        case 3: return 'Cambio de Categoría';
-        case 4: return 'Duplicado';
-        default: return '';
+        case 3: return 'Duplicado';
+        case 4: return 'Cambio de Categoría';
+        default: return 'Trámite';
     }
+}
+
+// ==========================
+// CANCELACIÓN DE CITAS
+// ==========================
+async function cancelarCita(fechaHora, citaId) {
+    if (!confirm('¿Estás seguro de que quieres cancelar esta cita?')) {
+        return;
+    }
+
+    try {
+        const userId = localStorage.getItem('user_id');
+        if (!userId) {
+            showNotification('No se encontró el usuario. Inicie sesión nuevamente.', 'error');
+            return;
+        }
+
+        const payload = {
+            usuarioId: parseInt(userId),
+            fechaHora: fechaHora
+        };
+
+        const response = await fetch(`${API_BASE_URL}/Citas/cancelar`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            showNotification('Cita cancelada exitosamente. Revisa tu correo para la confirmación.', 'success');
+            
+            // Actualiza la lista de citas
+            await cargarMisCitas();
+        } else {
+            const errorMsg = await response.text();
+            throw new Error(errorMsg || 'No se pudo cancelar la cita');
+        }
+    } catch (error) {
+        showNotification(`Error cancelando cita: ${error.message}`, 'error');
+        console.error('Error cancelando cita:', error);
+    }
+}
+
+// ==========================
+// NOTIFICACIONES
+// ==========================
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' :
+        type === 'error' ? 'bg-red-500 text-white' :
+        type === 'warning' ? 'bg-yellow-500 text-white' :
+        'bg-blue-500 text-white'
+    }`;
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
 }

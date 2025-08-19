@@ -59,7 +59,11 @@ namespace Application.Servicios
                 return null;
 
             var token = _generadorJwt.GenerarToken(usuario);
-            return new RespuestaLoginDTO { Token = token };
+            return new RespuestaLoginDTO { 
+                Token = token,
+                UsuarioId = usuario.Id,
+                Rol = (int)usuario.Rol
+            };
         }
             catch
             {
