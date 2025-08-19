@@ -55,19 +55,21 @@ namespace Application.Servicios
                 }
 
                 // Valido que haya suficientes estaciones para la configuracion
-                if (estaciones.Count < config.CantidadEstaciones)
+                var estacionesList = estaciones.ToList();
+                if (estacionesList.Count < config.CantidadEstaciones)
                 {
                     // Si no hay suficientes, creo las que faltan
-                    var estacionesFaltantes = config.CantidadEstaciones - estaciones.Count;
+                    var estacionesFaltantes = config.CantidadEstaciones - estacionesList.Count;
                     await CrearEstacionesPorDefectoAsync(estacionesFaltantes);
                     estaciones = await _unitOfWork.Estaciones.GetAllAsync();
+                    estacionesList = estaciones.ToList();
                 }
 
                 // Calculo cuantos slots de tiempo caben en el turno
                 var inicio = turno.HoraInicio;
                 var fin = turno.HoraFin;
                 var totalSlots = (int)((fin - inicio).TotalMinutes / config.DuracionCitaMinutos);
-                var estacionesParaUsar = estaciones.Take(config.CantidadEstaciones).ToList();
+                var estacionesParaUsar = estacionesList.Take(config.CantidadEstaciones).ToList();
 
                 var citasAGuardar = new List<Cita>();
 
