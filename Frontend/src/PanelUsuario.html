@@ -198,7 +198,7 @@
                 <div id="paso-hora" class="p-8 hidden">
                     <div class="text-center mb-8">
                         <h2 class="text-3xl font-bold text-gray-800 mb-2">Selecciona una Hora</h2>
-                        <p class="text-gray-600">Elige el horario que prefieras</p>
+                        <p class="text-gray-600">Elige el horario que prefieras. Los horarios se dividen automáticamente según la duración configurada.</p>
                     </div>
 
                     <div class="mb-8">
@@ -212,7 +212,7 @@
                 <div id="paso-confirmar" class="p-8 hidden">
                     <div class="text-center mb-8">
                         <h2 class="text-3xl font-bold text-gray-800 mb-2">Confirma tu Reserva</h2>
-                        <p class="text-gray-600">Revisa los detalles antes de confirmar</p>
+                        <p class="text-gray-600">Revisa los detalles antes de confirmar. Recibirás un correo de confirmación.</p>
                     </div>
 
                     <div class="max-w-2xl mx-auto">
@@ -236,17 +236,24 @@
                                     <span class="text-gray-600">Hora:</span>
                                     <span id="resumen-hora" class="font-medium text-gray-800">-</span>
                                 </div>
-                                <div class="flex justify-between items-center py-2">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-200">
                                     <span class="text-gray-600">Duración:</span>
                                     <span id="resumen-duracion" class="font-medium text-gray-800">-</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2">
+                                    <span class="text-gray-600">Estado:</span>
+                                    <span class="text-blue-600 font-medium">Pendiente de Confirmación</span>
                                 </div>
                             </div>
                         </div>
 
-                        <button id="btnConfirmarReserva" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-lg text-lg font-medium transition-colors">
+                        <button id="btnConfirmarReserva" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-lg text-lg font-medium transition-colors shadow-lg hover:shadow-xl">
                             <i class="fas fa-check mr-2"></i>
                             Confirmar Reserva
                         </button>
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            Al confirmar, recibirás un correo electrónico con los detalles de tu cita
+                        </p>
                     </div>
                 </div>
 

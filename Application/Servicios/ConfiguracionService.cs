@@ -119,6 +119,43 @@ namespace Application.Servicios
                 throw;
             }
         }
+
+        public async Task<bool> EliminarConfiguracionAsync(int configuracionId)
+        {
+            try
+            {
+                // Obtengo la configuracion
+                var config = await _unitOfWork.Configuraciones.GetByIdAsync(configuracionId);
+                if (config == null)
+                    return false;
+
+                // Valido que no haya citas activas para esta configuracion
+                var citasActivas = (await _unitOfWork.Citas.GetAllAsync())
+                    .Where(c => c.FechaHora.Date == config.Fecha.Date && 
+                               c.TurnoId == config.TurnoId && 
+                               c.Estado != Domain.Enums.EstadoCita.Cancelada)
+                    .ToList();
+
+                if (citasActivas.Any())
+                {
+                    throw new InvalidOperationException("No se puede eliminar la configuración porque hay citas activas para esta fecha y turno");
+                }
+
+                // Elimino la configuracion
+                _unitOfWork.Configuraciones.Delete(config);
+                await _unitOfWork.SaveChangesAsync();
+
+                // Registro en el log que se eliminó la configuracion
+                _logService.LogConfiguracion($"CONFIGURACIÓN ELIMINADA - Fecha {config.Fecha:dd/MM/yyyy}, Turno {config.TurnoId}", configuracionId);
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError($"Error eliminando configuración {configuracionId}", ex);
+                throw;
+            }
+        }
     }
 }
 

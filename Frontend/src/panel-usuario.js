@@ -275,7 +275,7 @@ async function cargarHorariosDisponibles() {
         const horarios = await resp.json();
 
         if (!horarios || horarios.length === 0) {
-            cont.innerHTML = '<div class="col-span-full text-center text-red-500">No hay horarios disponibles</div>';
+            cont.innerHTML = '<div class="col-span-full text-center text-red-500">No hay horarios disponibles para esta fecha y turno</div>';
             return;
         }
 
@@ -285,15 +285,18 @@ async function cargarHorariosDisponibles() {
             const cuposTotales = h.estacionesTotales ?? h.capacidadTotal ?? 4;
             const disabled = cuposDisponibles === 0;
             
-            const estadoCupos = disabled ? 'LLENO' : `${cuposDisponibles}/${cuposTotales} disponibles`;
+            // Formateo la hora de manera más clara
+            const horaFormateada = typeof hora === 'string' ? hora : hora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            
+            const estadoCupos = disabled ? 'LLENO' : `${cuposDisponibles}/${cuposTotales} cupos`;
             const colorEstado = disabled ? 'text-red-500' : cuposDisponibles <= 1 ? 'text-orange-500' : 'text-green-500';
             
             return `
                 <button data-hora="${hora}" ${disabled ? 'disabled' : ''}
-                        class="p-3 rounded-lg border ${disabled ? 'bg-red-50 text-red-400 border-red-200 cursor-not-allowed' : 'border-gray-200 hover:border-blue-500 hover:bg-blue-50'} transition text-left">
-                    <div class="font-medium text-gray-800">${formatoHora(hora)}</div>
-                    <div class="text-xs ${colorEstado} font-medium">${estadoCupos}</div>
-                    ${disabled ? '<div class="text-xs text-red-400 mt-1">No disponible</div>' : ''}
+                        class="p-4 rounded-lg border ${disabled ? 'bg-red-50 text-red-400 border-red-200 cursor-not-allowed' : 'border-gray-200 hover:border-blue-500 hover:bg-blue-50'} transition text-left">
+                    <div class="font-medium text-gray-800 text-lg">${horaFormateada}</div>
+                    <div class="text-sm ${colorEstado} font-medium mb-1">${estadoCupos}</div>
+                    ${!disabled ? '<div class="text-xs text-gray-500">Disponible</div>' : '<div class="text-xs text-red-400">No disponible</div>'}
                 </button>`;
         }).join('');
 
@@ -303,12 +306,12 @@ async function cargarHorariosDisponibles() {
                 cont.querySelectorAll('button').forEach(b => b.classList.remove('border-blue-500','bg-blue-50'));
                 btn.classList.add('border-blue-500','bg-blue-50');
                 datosReserva.hora = btn.getAttribute('data-hora');
-                datosReserva.fechaHora = `${datosReserva.fecha}T${formatoHora(datosReserva.hora)}`;
+                datosReserva.fechaHora = `${datosReserva.fecha}T${btn.querySelector('.font-medium').textContent}`;
                 document.getElementById('btnSiguiente').classList.remove('hidden');
             });
         });
     } catch (e) {
-        cont.innerHTML = '<div class="col-span-full text-center text-red-500">Error cargando horarios</div>';
+        cont.innerHTML = '<div class="col-span-full text-center text-red-500">Error cargando horarios: ' + e.message + '</div>';
         console.error(e);
     }
 }
@@ -330,6 +333,12 @@ async function confirmarReserva() {
     const userId = localStorage.getItem('user_id');
     if (!userId) {
         showNotification('No se encontró el usuario. Inicie sesión nuevamente.', 'error');
+        return;
+    }
+
+    // Validaciones adicionales
+    if (!datosReserva.fecha || !datosReserva.turnoId || !datosReserva.hora) {
+        showNotification('Faltan datos para confirmar la reserva', 'error');
         return;
     }
 
@@ -383,6 +392,7 @@ async function confirmarReserva() {
         
     } catch (e) {
         showNotification(`Error: ${e.message}`, 'error');
+        console.error('Error confirmando reserva:', e);
     } finally {
         btn.innerHTML = old;
         btn.disabled = false;
@@ -420,21 +430,42 @@ async function cargarMisCitas() {
                                  fecha > ahora && 
                                  fecha.getTime() - ahora.getTime() > 2 * 60 * 60 * 1000; // 2 horas
             
+            // Verifica si se puede modificar (minimo 2 horas antes)
+            const puedeModificar = estado !== 'Cancelada' && 
+                                  fecha > ahora && 
+                                  fecha.getTime() - ahora.getTime() > 2 * 60 * 60 * 1000; // 2 horas
+            
             return `
-                <div class="border border-gray-200 rounded-lg p-4 flex items-center justify-between">
-                    <div>
-                        <div class="text-gray-800 font-semibold">${tramiteNombre}</div>
-                        <div class="text-gray-600 text-sm">${fecha.toLocaleDateString()} - ${fecha.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div>
-                        <div class="text-gray-500 text-xs">Estación: ${c.estacionNumero || 'N/A'}</div>
-                        ${!puedeCancelar && estado !== 'Cancelada' ? '<div class="text-xs text-orange-500 mt-1">⚠️ Solo se puede cancelar hasta 2 horas antes de la cita</div>' : ''}
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex-1">
+                            <div class="text-gray-800 font-semibold">${tramiteNombre}</div>
+                            <div class="text-gray-600 text-sm">${fecha.toLocaleDateString()} - ${fecha.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div>
+                            <div class="text-gray-500 text-xs">Estación: ${c.estacionNumero || 'N/A'}</div>
+                            ${!puedeCancelar && estado !== 'Cancelada' ? '<div class="text-xs text-orange-500 mt-1">⚠️ Solo se puede modificar/cancelar hasta 2 horas antes de la cita</div>' : ''}
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs px-2 py-1 rounded-full ${estado==='Cancelada'?'bg-red-100 text-red-800':estado==='Confirmada'?'bg-green-100 text-green-800':'bg-blue-100 text-blue-800'}">${estado}</span>
+                        </div>
                     </div>
+                    
                     <div class="flex items-center space-x-2">
-                        <span class="text-xs px-2 py-1 rounded-full ${estado==='Cancelada'?'bg-red-100 text-red-800':estado==='Confirmada'?'bg-green-100 text-green-800':'bg-blue-100 text-blue-800'}">${estado}</span>
+                        ${puedeModificar ? `
+                            <button onclick="modificarCita(${c.id}, '${c.fechaHora || fecha.toISOString()}', '${tramiteNombre}')" 
+                                    class="text-xs bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg transition-colors">
+                                <i class="fas fa-edit mr-1"></i>Modificar
+                            </button>
+                        ` : ''}
+                        
                         ${puedeCancelar ? `
                             <button onclick="cancelarCita('${c.fechaHora || fecha.toISOString()}', ${c.id})" 
                                     class="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition-colors">
                                 <i class="fas fa-times mr-1"></i>Cancelar
                             </button>
+                        ` : ''}
+                        
+                        ${!puedeModificar && !puedeCancelar && estado !== 'Cancelada' ? `
+                            <span class="text-xs text-gray-400 px-3 py-1">No se puede modificar</span>
                         ` : ''}
                     </div>
                 </div>`;
@@ -493,6 +524,185 @@ async function cancelarCita(fechaHora, citaId) {
     } catch (error) {
         showNotification(`Error cancelando cita: ${error.message}`, 'error');
         console.error('Error cancelando cita:', error);
+    }
+}
+
+// ==========================
+// MODIFICACIÓN DE CITAS
+// ==========================
+async function modificarCita(citaId, fechaHoraActual, tramiteNombre) {
+    // Creo un modal para modificar la cita
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Modificar Cita</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cita Actual</label>
+                    <div class="text-sm text-gray-600 bg-gray-50 p-3 rounded">
+                        <div><strong>Trámite:</strong> ${tramiteNombre}</div>
+                        <div><strong>Fecha/Hora:</strong> ${new Date(fechaHoraActual).toLocaleString('es-ES')}</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nueva Fecha</label>
+                    <input type="date" id="nuevaFecha" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nuevo Turno</label>
+                    <select id="nuevoTurno" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        <option value="">Selecciona un turno</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nueva Hora</label>
+                    <select id="nuevaHora" class="w-full border border-gray-300 rounded-lg px-3 py-2">
+                        <option value="">Primero selecciona fecha y turno</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="this.closest('.fixed').remove()" 
+                        class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="confirmarModificacion(${citaId})" 
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    Confirmar Cambio
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Establecer fecha por defecto (mañana)
+    const manana = new Date();
+    manana.setDate(manana.getDate() + 1);
+    document.getElementById('nuevaFecha').value = manana.toISOString().split('T')[0];
+    
+    // Cargar turnos cuando se selecciona fecha
+    document.getElementById('nuevaFecha').addEventListener('change', cargarTurnosParaModificacion);
+    document.getElementById('nuevoTurno').addEventListener('change', cargarHorariosParaModificacion);
+    
+    // Cargar turnos iniciales
+    await cargarTurnosParaModificacion();
+}
+
+async function cargarTurnosParaModificacion() {
+    const fecha = document.getElementById('nuevaFecha').value;
+    const turnoSelect = document.getElementById('nuevoTurno');
+    const horaSelect = document.getElementById('nuevaHora');
+    
+    if (!fecha) {
+        turnoSelect.innerHTML = '<option value="">Selecciona una fecha primero</option>';
+        horaSelect.innerHTML = '<option value="">Selecciona fecha y turno primero</option>';
+        return;
+    }
+    
+    try {
+        const resp = await fetch(`${API_BASE_URL}/Citas/turnos`, { headers: getAuthHeaders() });
+        if (!resp.ok) throw new Error('No se pudieron cargar los turnos');
+        const turnos = await resp.json();
+        
+        turnoSelect.innerHTML = '<option value="">Selecciona un turno</option>' + 
+            turnos.map(t => `<option value="${t.id}">${t.nombre} (${t.rango || `${t.horaInicio} - ${t.horaFin}`})</option>`).join('');
+        
+        horaSelect.innerHTML = '<option value="">Selecciona un turno primero</option>';
+    } catch (e) {
+        turnoSelect.innerHTML = '<option value="">Error cargando turnos</option>';
+        console.error(e);
+    }
+}
+
+async function cargarHorariosParaModificacion() {
+    const fecha = document.getElementById('nuevaFecha').value;
+    const turnoId = document.getElementById('nuevoTurno').value;
+    const horaSelect = document.getElementById('nuevaHora');
+    
+    if (!fecha || !turnoId) {
+        horaSelect.innerHTML = '<option value="">Selecciona fecha y turno primero</option>';
+        return;
+    }
+    
+    try {
+        const params = new URLSearchParams({ fecha, turnoId });
+        const resp = await fetch(`${API_BASE_URL}/Citas/horarios-disponibles?${params.toString()}`, { 
+            headers: getAuthHeaders() 
+        });
+        
+        if (!resp.ok) throw new Error('No se pudieron cargar los horarios');
+        const horarios = await resp.json();
+        
+        if (!horarios || horarios.length === 0) {
+            horaSelect.innerHTML = '<option value="">No hay horarios disponibles</option>';
+            return;
+        }
+        
+        horaSelect.innerHTML = '<option value="">Selecciona una hora</option>' + 
+            horarios.map(h => {
+                const hora = h.fechaHora || h.hora || h.horario || h;
+                const cuposDisponibles = h.estacionesDisponibles ?? h.cuposDisponibles ?? h.capacidadDisponible ?? h.disponibles ?? 0;
+                const disabled = cuposDisponibles === 0;
+                
+                if (disabled) return '';
+                
+                const horaFormateada = typeof hora === 'string' ? hora : hora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                return `<option value="${hora}">${horaFormateada} (${cuposDisponibles} cupos disponibles)</option>`;
+            }).filter(opt => opt !== '').join('');
+        
+    } catch (e) {
+        horaSelect.innerHTML = '<option value="">Error cargando horarios</option>';
+        console.error(e);
+    }
+}
+
+async function confirmarModificacion(citaId) {
+    const nuevaFecha = document.getElementById('nuevaFecha').value;
+    const nuevoTurno = document.getElementById('nuevoTurno').value;
+    const nuevaHora = document.getElementById('nuevaHora').value;
+    
+    if (!nuevaFecha || !nuevoTurno || !nuevaHora) {
+        showNotification('Por favor completa todos los campos', 'warning');
+        return;
+    }
+    
+    try {
+        const nuevaFechaHora = `${nuevaFecha}T${nuevaHora}`;
+        
+        const payload = {
+            citaId: citaId,
+            usuarioId: parseInt(localStorage.getItem('user_id')),
+            nuevaFechaHora: nuevaFechaHora,
+            nuevoTurnoId: parseInt(nuevoTurno)
+        };
+        
+        const resp = await fetch(`${API_BASE_URL}/Citas/editar`, {
+            method: 'PUT',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(payload)
+        });
+        
+        if (!resp.ok) {
+            const msg = await resp.text();
+            throw new Error(msg || 'No se pudo modificar la cita');
+        }
+        
+        showNotification('¡Cita modificada exitosamente! Revisa tu correo para la confirmación.', 'success');
+        
+        // Cerrar modal y actualizar lista
+        document.querySelector('.fixed').remove();
+        await cargarMisCitas();
+        
+    } catch (e) {
+        showNotification(`Error modificando cita: ${e.message}`, 'error');
+        console.error('Error modificando cita:', e);
     }
 }
 

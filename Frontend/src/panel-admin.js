@@ -158,28 +158,75 @@ async function guardarConfiguracionEstaciones() {
 // Este metodo genera los horarios automaticamente
 // Lo hice asi porque el admin no debe tener que crear cada horario manualmente
 async function generarSlotsDialog() {
-    if (!configuracionActual || !configuracionActual.id) {
-        showNotification('Primero debes crear una configuración', 'warning');
-        return;
-    }
-
     try {
-        const response = await fetch(`${API_BASE_URL}/Citas/generar-slots/${configuracionActual.id}`, {
-            method: 'POST',
-            headers: getAuthHeaders()
-        });
+        // Obtengo los valores actuales del formulario
+        const fecha = document.getElementById('fechaHabilitada').value;
+        const turnoMatutino = document.getElementById('turnoMatutino').checked;
+        const turnoVespertino = document.getElementById('turnoVespertino').checked;
+        const duracion = parseInt(document.getElementById('duracionCitas').value);
+        const estaciones = parseInt(document.getElementById('cantidadEstaciones').value);
 
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(error);
+        if (!fecha) {
+            showNotification('Primero debes seleccionar una fecha', 'warning');
+            return;
         }
 
-        showNotification('Horarios generados correctamente', 'success');
+        if (!turnoMatutino && !turnoVespertino) {
+            showNotification('Debes seleccionar al menos un turno', 'warning');
+            return;
+        }
+
+        if (estaciones < 1 || estaciones > 10) {
+            showNotification('La cantidad de estaciones debe estar entre 1 y 10', 'warning');
+            return;
+        }
+
+        // Creo configuraciones para cada turno seleccionado
+        let configuracionesCreadas = 0;
+        
+        if (turnoMatutino) {
+            await crearConfiguracion(fecha, 1); // ID del turno matutino
+            configuracionesCreadas++;
+        }
+        
+        if (turnoVespertino) {
+            await crearConfiguracion(fecha, 2); // ID del turno vespertino
+            configuracionesCreadas++;
+        }
+
+        // Ahora genero los slots para cada configuración creada
+        const response = await fetch(`${API_BASE_URL}/Configuraciones/activas`, { 
+            headers: getAuthHeaders() 
+        });
+        
+        if (response.ok) {
+            const configuraciones = await response.json();
+            const configuracionesDeHoy = configuraciones.filter(c => c.fecha === fecha);
+            
+            for (const config of configuracionesDeHoy) {
+                try {
+                    await fetch(`${API_BASE_URL}/Citas/generar-slots/${config.id}`, {
+                        method: 'POST',
+                        headers: getAuthHeaders()
+                    });
+                } catch (error) {
+                    console.error(`Error generando slots para configuración ${config.id}:`, error);
+                }
+            }
+        }
+
+        showNotification(`Configuración creada y ${configuracionesCreadas} turno(s) configurado(s) exitosamente`, 'success');
+        
+        // Limpio el formulario y actualizo la vista
+        document.getElementById('fechaHabilitada').value = '';
+        await cargarConfiguracionesActivas();
+        mostrarEstadoConfiguracion();
+        await mostrarConfiguracionesActivas();
         await cargarSystemLogs();
         
     } catch (error) {
         console.error('Error generando slots:', error);
-        showNotification('Error generando horarios', 'error');
+        showNotification('Error generando horarios: ' + error.message, 'error');
     }
 }
 
@@ -227,6 +274,10 @@ function mostrarEstadoConfiguracion() {
                     <div>Duración: ${configuracionActual.duracionCitaMinutos} min</div>
                     <div>Estaciones: ${configuracionActual.cantidadEstaciones}</div>
                 </div>
+                <div class="mt-2 text-xs text-green-600">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Los horarios se dividen automáticamente cada ${configuracionActual.duracionCitaMinutos} minutos
+                </div>
             </div>
         `;
     } else {
@@ -239,6 +290,10 @@ function mostrarEstadoConfiguracion() {
                 </div>
                 <div class="mt-2 text-sm text-yellow-700">
                     No hay configuración activa. Crea una nueva configuración para comenzar.
+                </div>
+                <div class="mt-2 text-xs text-yellow-600">
+                    <i class="fas fa-lightbulb mr-1"></i>
+                    Selecciona una fecha, turno, duración y estaciones, luego presiona "Generar Horarios"
                 </div>
             </div>
         `;
@@ -262,21 +317,55 @@ async function mostrarConfiguracionesActivas() {
             const fechas = await response.json();
             
             if (fechas && fechas.length > 0) {
-                container.innerHTML = fechas.map(f => `
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="font-medium text-blue-800">${f.fechaFormateada}</span>
-                            <span class="text-xs text-blue-600">${f.turnos.length} turno(s)</span>
-                        </div>
-                        <div class="space-y-1">
-                            ${f.turnos.map(t => `
-                                <div class="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1">
-                                    Turno ${t.turnoId} - ${t.duracion}min - ${t.estaciones} estaciones
+                container.innerHTML = fechas.map(f => {
+                    const turnosInfo = f.turnos.map(t => `${t.duracion}min, ${t.estaciones} estaciones`).join(' | ');
+                    const fechaObj = new Date(f.fecha);
+                    const esHoy = fechaObj.toDateString() === new Date().toDateString();
+                    const esManana = fechaObj.toDateString() === new Date(Date.now() + 24*60*60*1000).toDateString();
+                    
+                    let fechaClase = 'text-gray-800';
+                    let fechaIcono = 'fas fa-calendar';
+                    
+                    if (esHoy) {
+                        fechaClase = 'text-green-600';
+                        fechaIcono = 'fas fa-calendar-day';
+                    } else if (esManana) {
+                        fechaClase = 'text-blue-600';
+                        fechaIcono = 'fas fa-calendar-week';
+                    }
+                    
+                    return `
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="${fechaIcono} ${fechaClase}"></i>
+                                    <span class="font-medium ${fechaClase}">${f.fechaFormateada}</span>
+                                    ${esHoy ? '<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Hoy</span>' : ''}
+                                    ${esManana ? '<span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Mañana</span>' : ''}
                                 </div>
-                            `).join('')}
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-blue-600">${f.turnos.length} turno(s)</span>
+                                    <button onclick="eliminarConfiguracion('${f.fecha}')" 
+                                            class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg transition-colors"
+                                            title="Eliminar configuración">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                ${f.turnos.map(t => `
+                                    <div class="text-xs text-blue-700 bg-blue-100 rounded px-2 py-1">
+                                        Turno ${t.turnoId} - ${t.duracion}min - ${t.estaciones} estaciones
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="mt-2 text-xs text-gray-500">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Esta configuración se eliminará automáticamente en 24 horas
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             } else {
                 container.innerHTML = '<div class="text-xs text-gray-500">No hay configuraciones activas</div>';
             }
@@ -286,6 +375,66 @@ async function mostrarConfiguracionesActivas() {
     } catch (error) {
         console.error('Error mostrando configuraciones:', error);
         container.innerHTML = '<div class="text-xs text-red-500">Error cargando configuraciones</div>';
+    }
+}
+
+// Este metodo elimina una configuracion del sistema
+// Lo hice asi porque el admin necesita poder eliminar configuraciones que ya no necesita
+async function eliminarConfiguracion(fecha) {
+    if (!confirm(`¿Estás seguro de que quieres eliminar la configuración para ${new Date(fecha).toLocaleDateString()}?\n\nEsto también eliminará todos los slots generados para esa fecha.`)) {
+        return;
+    }
+
+    try {
+        // Primero obtengo las configuraciones para esa fecha
+        const response = await fetch(`${API_BASE_URL}/Configuraciones/activas`, { 
+            headers: getAuthHeaders() 
+        });
+        
+        if (response.ok) {
+            const configuraciones = await response.json();
+            const configuracionesDeFecha = configuraciones.filter(c => c.fecha === fecha);
+            
+            if (configuracionesDeFecha.length === 0) {
+                showNotification('No se encontraron configuraciones para eliminar', 'warning');
+                return;
+            }
+
+            // Elimino cada configuración de la fecha
+            let eliminadas = 0;
+            for (const config of configuracionesDeFecha) {
+                try {
+                    const deleteResponse = await fetch(`${API_BASE_URL}/Configuraciones/${config.id}`, {
+                        method: 'DELETE',
+                        headers: getAuthHeaders()
+                    });
+                    
+                    if (deleteResponse.ok) {
+                        eliminadas++;
+                    }
+                } catch (error) {
+                    console.error(`Error eliminando configuración ${config.id}:`, error);
+                }
+            }
+
+            if (eliminadas > 0) {
+                showNotification(`Configuración eliminada exitosamente. ${eliminadas} turno(s) eliminado(s)`, 'success');
+                
+                // Actualizo la vista
+                await cargarConfiguracionesActivas();
+                mostrarEstadoConfiguracion();
+                await mostrarConfiguracionesActivas();
+                await cargarSystemLogs();
+            } else {
+                showNotification('No se pudo eliminar ninguna configuración', 'error');
+            }
+        } else {
+            throw new Error('Error obteniendo configuraciones');
+        }
+        
+    } catch (error) {
+        console.error('Error eliminando configuración:', error);
+        showNotification('Error eliminando configuración: ' + error.message, 'error');
     }
 }
 
@@ -310,9 +459,11 @@ async function cargarSystemLogs() {
             // Si falla, muestro logs simulados como respaldo
             const logsSimulados = [
                 { timestamp: new Date(), mensaje: 'Sistema iniciado correctamente', tipo: 'info' },
-                { timestamp: new Date(Date.now() - 60000), mensaje: 'Configuración creada para lunes', tipo: 'success' },
-                { timestamp: new Date(Date.now() - 120000), mensaje: 'Slots generados automáticamente', tipo: 'info' },
-                { timestamp: new Date(Date.now() - 180000), mensaje: 'Usuario registrado exitosamente', tipo: 'success' }
+                { timestamp: new Date(Date.now() - 60000), mensaje: 'Configuración creada para fecha seleccionada', tipo: 'success' },
+                { timestamp: new Date(Date.now() - 120000), mensaje: 'Slots generados automáticamente según configuración', tipo: 'info' },
+                { timestamp: new Date(Date.now() - 180000), mensaje: 'Usuario registrado exitosamente', tipo: 'success' },
+                { timestamp: new Date(Date.now() - 240000), mensaje: 'Cita reservada exitosamente', tipo: 'success' },
+                { timestamp: new Date(Date.now() - 300000), mensaje: 'Email de confirmación enviado', tipo: 'info' }
             ];
             mostrarLogs(logsSimulados);
         }
@@ -322,9 +473,11 @@ async function cargarSystemLogs() {
         // En caso de error, muestro logs simulados
         const logsSimulados = [
             { timestamp: new Date(), mensaje: 'Sistema iniciado correctamente', tipo: 'info' },
-            { timestamp: new Date(Date.now() - 60000), mensaje: 'Configuración creada para lunes', tipo: 'success' },
-            { timestamp: new Date(Date.now() - 120000), mensaje: 'Slots generados automáticamente', tipo: 'info' },
-            { timestamp: new Date(Date.now() - 180000), mensaje: 'Usuario registrado exitosamente', tipo: 'success' }
+            { timestamp: new Date(Date.now() - 60000), mensaje: 'Configuración creada para fecha seleccionada', tipo: 'success' },
+            { timestamp: new Date(Date.now() - 120000), mensaje: 'Slots generados automáticamente según configuración', tipo: 'info' },
+            { timestamp: new Date(Date.now() - 180000), mensaje: 'Usuario registrado exitosamente', tipo: 'success' },
+            { timestamp: new Date(Date.now() - 240000), mensaje: 'Cita reservada exitosamente', tipo: 'success' },
+            { timestamp: new Date(Date.now() - 300000), mensaje: 'Email de confirmación enviado', tipo: 'info' }
         ];
         mostrarLogs(logsSimulados);
     }
@@ -344,10 +497,21 @@ function mostrarLogs(logs) {
             minute: '2-digit' 
         });
         
+        // Formateo el mensaje para que sea más legible
+        let mensaje = log.mensaje;
+        if (mensaje.includes('SLOTS GENERADOS')) {
+            mensaje = `<span class="font-medium text-green-700">${mensaje}</span>`;
+        } else if (mensaje.includes('RESERVA EXITOSA')) {
+            mensaje = `<span class="font-medium text-blue-700">${mensaje}</span>`;
+        } else if (mensaje.includes('Error')) {
+            mensaje = `<span class="font-medium text-red-700">${mensaje}</span>`;
+        }
+        
         return `
-            <div class="flex items-center space-x-2 py-1">
+            <div class="flex items-center space-x-2 py-1 border-b border-gray-100 last:border-b-0">
                 <span class="${color}">${icono}</span>
-                <span class="text-gray-600">${timestamp} - ${log.mensaje}</span>
+                <span class="text-gray-600 text-xs">${timestamp}</span>
+                <span class="text-gray-600 flex-1">${mensaje}</span>
             </div>
         `;
     }).join('');

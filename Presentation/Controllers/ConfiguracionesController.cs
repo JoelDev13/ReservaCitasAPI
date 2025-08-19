@@ -94,5 +94,29 @@ namespace Presentation.Controllers
                 return StatusCode(500, new { error = "Error leyendo logs del sistema" });
             }
         }
+
+        // Endpoint para eliminar una configuracion
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            try
+            {
+                var result = await _service.EliminarConfiguracionAsync(id);
+                if (result)
+                {
+                    return Ok(new { message = "Configuracion eliminada exitosamente" });
+                }
+                return NotFound(new { message = "Configuracion no encontrada" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError($"Error eliminando configuración {id}", ex);
+                return StatusCode(500, new { error = "Error interno del servidor" });
+            }
+        }
     }
 }
