@@ -1,5 +1,8 @@
 ﻿using Domain.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using Domain.Enums;
+using Application.Converters;
 
 namespace Application.DTOs.Cita
 {
@@ -9,9 +12,9 @@ namespace Application.DTOs.Cita
         public int UsuarioId { get; set; }  
 
         [Required]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime FechaHora { get; set; } 
 
-        [Required]
         public int? EstacionNumero { get; set; }
 
         [Required]

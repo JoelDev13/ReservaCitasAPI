@@ -1,6 +1,27 @@
 const API_BASE_URL = "http://localhost:5256/api";
 
 // ==========================
+// FUNCIONES UTILITARIAS
+// ==========================
+function formatearFecha(fecha) {
+    if (!fecha || isNaN(fecha.getTime())) {
+        return 'Fecha invalida';
+    }
+    
+    // Formato: "Lunes, 19 de Agosto de 2025 a las 20:05"
+    const opciones = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    
+    return fecha.toLocaleDateString('es-ES', opciones);
+}
+
+// ==========================
 // VARIABLES GLOBALES
 // ==========================
 let pasoActual = 1;
@@ -267,6 +288,27 @@ async function cargarHorariosDisponibles() {
 
     cont.innerHTML = '<div class="col-span-full text-center text-gray-500">Cargando horarios...</div>';
     try {
+        // Primero obtengo la configuracion para saber cuantas estaciones hay
+        const configResp = await fetch(`${API_BASE_URL}/Configuraciones/fechas-disponibles`, { 
+            headers: getAuthHeaders() 
+        });
+        
+        if (!configResp.ok) throw new Error('No se pudo obtener la configuracion');
+        const configuraciones = await configResp.json();
+        
+        // Busco la configuracion para la fecha y turno seleccionados
+        const fechaSeleccionada = new Date(datosReserva.fecha).toISOString().split('T')[0];
+        const configuracion = configuraciones.find(c => {
+            const fechaConfig = new Date(c.fecha).toISOString().split('T')[0];
+            return fechaConfig === fechaSeleccionada && c.turnoId === datosReserva.turnoId;
+        });
+        
+        if (!configuracion) {
+            cont.innerHTML = '<div class="col-span-full text-center text-red-500">No hay configuracion para esta fecha y turno</div>';
+            return;
+        }
+        
+        // Ahora obtengo los horarios disponibles
         const params = new URLSearchParams({ 
             fecha: datosReserva.fecha, 
             turnoId: String(datosReserva.turnoId) 
@@ -284,14 +326,36 @@ async function cargarHorariosDisponibles() {
             return;
         }
 
-        cont.innerHTML = horarios.map(h => {
+        // Limito los horarios segun la cantidad de estaciones configuradas
+        const horariosLimitados = horarios.slice(0, configuracion.cantidadEstaciones || 4);
+        
+        cont.innerHTML = horariosLimitados.map(h => {
             const hora = h.fechaHora || h.hora || h.horario || h;
             const cuposDisponibles = h.estacionesDisponibles ?? h.cuposDisponibles ?? h.capacidadDisponible ?? h.disponibles ?? 0;
-            const cuposTotales = h.estacionesTotales ?? h.capacidadTotal ?? 4;
+            const cuposTotales = configuracion.cantidadEstaciones || 4;
             const disabled = cuposDisponibles === 0;
             
-            // Formateo la hora de manera más clara
-            const horaFormateada = typeof hora === 'string' ? hora : hora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            // Formateo la hora de manera simple: solo HH:MM
+            let horaFormateada = '';
+            if (typeof hora === 'string') {
+                if (hora.includes('T')) {
+                    // Es un formato ISO, extraigo solo la hora
+                    horaFormateada = new Date(hora).toLocaleTimeString('es-ES', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                } else if (hora.includes(':')) {
+                    // Ya es formato HH:MM o HH:MM:SS
+                    horaFormateada = hora.split(':').slice(0, 2).join(':');
+                } else {
+                    horaFormateada = hora;
+                }
+            } else {
+                horaFormateada = new Date(hora).toLocaleTimeString('es-ES', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+            }
             
             const estadoCupos = disabled ? 'LLENO' : `${cuposDisponibles}/${cuposTotales} cupos`;
             const colorEstado = disabled ? 'text-red-500' : cuposDisponibles <= 1 ? 'text-orange-500' : 'text-green-500';
@@ -337,8 +401,8 @@ async function cargarHorariosDisponibles() {
                     }
                 }
                 
-                // Construyo la fecha y hora completa en formato ISO
-                datosReserva.fechaHora = `${datosReserva.fecha}T${horaFormateada}`;
+                // Construyo la fecha y hora completa en formato simple
+                datosReserva.fechaHora = `${datosReserva.fecha} ${horaFormateada}`;
                 
                 console.log('Hora seleccionada:', horaSeleccionada);
                 console.log('Hora formateada:', horaFormateada);
@@ -379,15 +443,18 @@ async function confirmarReserva() {
         return;
     }
 
-    // Validación adicional del formato de fecha y hora
-    if (!datosReserva.fechaHora || !datosReserva.fechaHora.includes('T')) {
+    // Validación del formato de fecha y hora
+    if (!datosReserva.fechaHora) {
         showNotification('Error en el formato de fecha y hora. Intenta seleccionar la hora nuevamente.', 'error');
         return;
     }
 
-    // Aseguro que fechaHora esté en formato ISO correcto
+    // Convierto el formato de fecha a ISO para el backend
     let fechaHoraFinal = datosReserva.fechaHora;
-    if (!fechaHoraFinal.endsWith(':00')) {
+    if (fechaHoraFinal.includes(' ')) {
+        // Si es formato "YYYY-MM-DD HH:MM", lo convierto a ISO
+        fechaHoraFinal = fechaHoraFinal.replace(' ', 'T') + ':00';
+    } else if (!fechaHoraFinal.endsWith(':00')) {
         // Si no termina en :00, lo agrego
         fechaHoraFinal = fechaHoraFinal + ':00';
     }
@@ -476,28 +543,31 @@ async function cargarMisCitas() {
             return;
         }
         
-        cont.innerHTML = citas.map(c => {
+                cont.innerHTML = citas.map(c => {
             const fecha = new Date(c.fechaHora || `${c.fecha}T${c.hora || '00:00'}`);
             const estado = c.estado || 'Reservada';
             const tramiteNombre = c.tramiteNombre || mapTramite(c.tipoTramite) || 'Trámite';
             
+            // Formateo la fecha para mostrarla de forma legible
+            const fechaFormateada = formatearFecha(fecha);
+            
             // Verifica si se puede cancelar (minimo 2 horas antes)
             const ahora = new Date();
             const puedeCancelar = estado !== 'Cancelada' && 
-                                 fecha > ahora && 
-                                 fecha.getTime() - ahora.getTime() > 2 * 60 * 60 * 1000; // 2 horas
+                             fecha > ahora && 
+                             fecha.getTime() - ahora.getTime() > 2 * 60 * 60 * 1000; // 2 horas
             
             // Verifica si se puede modificar (minimo 2 horas antes)
             const puedeModificar = estado !== 'Cancelada' && 
-                                  fecha > ahora && 
-                                  fecha.getTime() - ahora.getTime() > 2 * 60 * 60 * 1000; // 2 horas
+                              fecha > ahora && 
+                              fecha.getTime() - ahora.getTime() > 2 * 60 * 60 * 1000; // 2 horas
             
             return `
                 <div class="border border-gray-200 rounded-lg p-4">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex-1">
                             <div class="text-gray-800 font-semibold">${tramiteNombre}</div>
-                            <div class="text-gray-600 text-sm">${fecha.toLocaleDateString()} - ${fecha.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'})}</div>
+                            <div class="text-gray-600 text-sm">${fechaFormateada}</div>
                             <div class="text-gray-500 text-xs">Estación: ${c.estacionNumero || 'N/A'}</div>
                             ${!puedeCancelar && estado !== 'Cancelada' ? '<div class="text-xs text-orange-500 mt-1">⚠️ Solo se puede modificar/cancelar hasta 2 horas antes de la cita</div>' : ''}
                         </div>
