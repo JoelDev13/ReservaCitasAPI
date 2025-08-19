@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Usuario - Reserva de Citas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header del Panel Usuario -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-white text-lg"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Reserva de Citas
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-blue-600 font-medium text-sm" id="userInitial">U</span>
+                        </div>
+                        <span class="text-gray-700 font-medium" id="userName">Usuario</span>
+                    </div>
+                    <button id="cerrarSesionU" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Progreso del Flujo -->
+        <div class="mb-8">
+            <div class="flex items-center justify-center space-x-2 md:space-x-4 overflow-x-auto pb-2">
+                <!-- Step 1: Login -->
+                <div class="flex items-center flex-shrink-0">
+                    <div class="w-8 h-8 md:w-10 md:h-10 bg-green-500 text-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-sm md:text-base"></i>
+                    </div>
+                    <span class="ml-1 md:ml-2 text-xs md:text-sm font-medium text-gray-600">Login</span>
+                </div>
+                
+                <div class="w-8 md:w-16 h-0.5 bg-green-500 flex-shrink-0"></div>
+                
+                <!-- Step 2: Trámite -->
+                <div class="flex items-center flex-shrink-0">
+                    <div id="step-tramite" class="w-8 h-8 md:w-10 md:h-10 bg-blue-500 text-white rounded-full flex items-center justify-center">
+                        <i class="fas fa-clipboard-list text-sm md:text-base"></i>
+                    </div>
+                    <span class="ml-1 md:ml-2 text-xs md:text-sm font-medium text-blue-600">Trámite</span>
+                </div>
+                
+                <div id="line-fecha" class="w-8 md:w-16 h-0.5 bg-gray-300 flex-shrink-0"></div>
+                
+                <!-- Step 3: Fecha -->
+                <div class="flex items-center flex-shrink-0">
+                    <div id="step-fecha" class="w-8 h-8 md:w-10 md:h-10 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-calendar text-sm md:text-base"></i>
+                    </div>
+                    <span class="ml-1 md:ml-2 text-xs md:text-sm font-medium text-gray-400">Fecha</span>
+                </div>
+                
+                <div id="line-turno" class="w-8 md:w-16 h-0.5 bg-gray-300 flex-shrink-0"></div>
+                
+                <!-- Step 4: Turno -->
+                <div class="flex items-center flex-shrink-0">
+                    <div id="step-turno" class="w-8 h-8 md:w-10 md:h-10 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-clock text-sm md:text-base"></i>
+                    </div>
+                    <span class="ml-1 md:ml-2 text-xs md:text-sm font-medium text-gray-400">Turno</span>
+                </div>
+                
+                <div id="line-hora" class="w-8 md:w-16 h-0.5 bg-gray-300 flex-shrink-0"></div>
+                
+                <!-- Step 5: Hora -->
+                <div class="flex items-center flex-shrink-0">
+                    <div id="step-hora" class="w-8 h-8 md:w-10 md:h-10 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-clock text-sm md:text-base"></i>
+                    </div>
+                    <span class="ml-1 md:ml-2 text-xs md:text-sm font-medium text-gray-400">Hora</span>
+                </div>
+                
+                <div id="line-confirmar" class="w-8 md:w-16 h-0.5 bg-gray-300 flex-shrink-0"></div>
+                
+                <!-- Step 6: Confirmar -->
+                <div class="flex items-center flex-shrink-0">
+                    <div id="step-confirmar" class="w-8 h-8 md:w-10 md:h-10 bg-gray-300 text-gray-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check-double text-sm md:text-base"></i>
+                    </div>
+                    <span class="ml-1 md:ml-2 text-xs md:text-sm font-medium text-gray-400">Confirmar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel Principal de Reserva -->
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                
+                <!-- PASO 1: SELECCIÓN DE TRÁMITE -->
+                <div id="paso-tramite" class="p-8">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Selecciona tu Trámite</h2>
+                        <p class="text-gray-600">Elige el tipo de servicio que necesitas</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Trámite 1 -->
+                        <div class="tramite-option border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all" data-tramite-id="1" data-tramite-nombre="Renovación de Licencia" data-duracion="15">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-id-card text-blue-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Renovación de Licencia</h3>
+                                <p class="text-gray-600 text-sm mb-3">Renovar tu licencia de conducir vigente</p>
+                                <div class="flex justify-center items-center text-sm text-gray-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trámite 2 -->
+                        <div class="tramite-option border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all" data-tramite-id="2" data-tramite-nombre="Primera Licencia" data-duracion="30">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-plus-circle text-green-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Primera Licencia</h3>
+                                <p class="text-gray-600 text-sm mb-3">Obtener tu primera licencia de conducir</p>
+                                <div class="flex justify-center items-center text-sm text-gray-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trámite 3 -->
+                        <div class="tramite-option border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all" data-tramite-id="3" data-tramite-nombre="Duplicado" data-duracion="10">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-copy text-orange-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Duplicado</h3>
+                                <p class="text-gray-600 text-sm mb-3">Solicitar duplicado por pérdida o robo</p>
+                                <div class="flex justify-center items-center text-sm text-gray-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trámite 4 -->
+                        <div class="tramite-option border-2 border-gray-200 rounded-xl p-6 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all" data-tramite-id="4" data-tramite-nombre="Cambio de Categoría" data-duracion="20">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-exchange-alt text-purple-600 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Cambio de Categoría</h3>
+                                <p class="text-gray-600 text-sm mb-3">Cambiar la categoría de tu licencia</p>
+                                <div class="flex justify-center items-center text-sm text-gray-500">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 2: SELECCION DE FECHA -->
+                <div id="paso-fecha" class="p-8 hidden">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Selecciona una Fecha</h2>
+                        <p class="text-gray-600">Elige el día que mejor te convenga</p>
+                    </div>
+
+                    <div class="mb-8">
+                        <div id="fechasDisponibles" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <!-- Las fechas se cargan dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 3: SELECCIoN DE TURNO -->
+                <div id="paso-turno" class="p-8 hidden">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Selecciona un Turno</h2>
+                        <p class="text-gray-600">Elige el turno disponible para tu fecha</p>
+                    </div>
+
+                    <div class="mb-8">
+                        <div id="turnosDisponibles" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Los turnos se cargan dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 4: SELECCIoN DE HORA -->
+                <div id="paso-hora" class="p-8 hidden">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Selecciona una Hora</h2>
+                        <p class="text-gray-600">Elige el horario que prefieras. Los horarios se dividen automáticamente según la duración configurada.</p>
+                    </div>
+
+                    <div class="mb-8">
+                        <div id="horariosDisponibles" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <!-- Los horarios se cargan dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 5: CONFIRMACIoN -->
+                <div id="paso-confirmar" class="p-8 hidden">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2">Confirma tu Reserva</h2>
+                        <p class="text-gray-600">Revisa los detalles antes de confirmar. Recibirás un correo de confirmación.</p>
+                    </div>
+
+                    <div class="max-w-2xl mx-auto">
+                        <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Resumen de tu Cita</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">Trámite:</span>
+                                    <span id="resumen-tramite" class="font-medium text-gray-800">-</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">Fecha:</span>
+                                    <span id="resumen-fecha" class="font-medium text-gray-800">-</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">Turno:</span>
+                                    <span id="resumen-turno" class="font-medium text-gray-800">-</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">Hora:</span>
+                                    <span id="resumen-hora" class="font-medium text-gray-800">-</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                                    <span class="text-gray-600">Duración:</span>
+                                    <span id="resumen-duracion" class="font-medium text-gray-800">-</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2">
+                                    <span class="text-gray-600">Estado:</span>
+                                    <span class="text-blue-600 font-medium">Pendiente de Confirmación</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="btnConfirmarReserva" class="w-full bg-green-600 hover:bg-green-700 text-white py-4 px-6 rounded-lg text-lg font-medium transition-colors shadow-lg hover:shadow-xl">
+                            <i class="fas fa-check mr-2"></i>
+                            Confirmar Reserva
+                        </button>
+                        <p class="text-xs text-gray-500 mt-2 text-center">
+                            Al confirmar, recibirás un correo electrónico con los detalles de tu cita
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Botones de Navegación -->
+                <div class="flex justify-between p-8 bg-gray-50">
+                    <button id="btnAnterior" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition-colors hidden">
+                        <i class="fas fa-arrow-left mr-2"></i>Anterior
+                    </button>
+                    <button id="btnSiguiente" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors ml-auto hidden">
+                        Continuar<i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mis Citas -->
+        <div class="max-w-4xl mx-auto mt-8">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                        <i class="fas fa-calendar-check mr-2"></i>
+                        Mis Citas
+                    </h2>
+                </div>
+                <div class="p-6">
+                    <div id="listaCitas" class="space-y-4">
+                        <div class="text-center py-8">
+                            <i class="fas fa-calendar-times text-gray-400 text-4xl mb-4"></i>
+                            <p class="text-gray-600">Cargando citas...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12">
+        <div class="container mx-auto px-6 py-4">
+            <div class="text-center text-sm text-gray-600">
+                © 2024 Sistema de Reserva de Citas - Panel de Usuario
+            </div>
+        </div>
+
+        <script src="panel-usuario.js"></script>
+    </footer>

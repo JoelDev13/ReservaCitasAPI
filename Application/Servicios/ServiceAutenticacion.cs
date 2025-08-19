@@ -25,11 +25,17 @@ namespace Application.Servicios
                 if (_repositorio.ObtenerPorEmail(dto.Email) != null)
                     return false;
 
+                // verifica si existe un usario con la misma cedula
+                if (_repositorio.ObtenerPorCedula(dto.Cedula) != null)
+                    return false;
+
+
                 var usuario = new Usuario
             {
                 Nombre = dto.Nombre,
                 Email = dto.Email,
                 ContrasenaHash = BCrypt.Net.BCrypt.HashPassword(dto.ContrasenaHash),
+                Cedula = dto.Cedula,
                 Rol = dto.RolUsuario
             };
 
@@ -53,7 +59,11 @@ namespace Application.Servicios
                 return null;
 
             var token = _generadorJwt.GenerarToken(usuario);
-            return new RespuestaLoginDTO { Token = token };
+            return new RespuestaLoginDTO { 
+                Token = token,
+                UsuarioId = usuario.Id,
+                Rol = (int)usuario.Rol
+            };
         }
             catch
             {

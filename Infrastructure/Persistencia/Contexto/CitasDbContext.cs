@@ -30,10 +30,20 @@ namespace Infrastructure.Persistencia.Contexto
                 entity.Property(u => u.Email)
                     .IsRequired()
                     .HasMaxLength(150);
+                
+                entity.Property(u => u.Cedula)
+                      .IsRequired()
+                      .HasMaxLength(20);
 
                 entity.HasIndex(u => u.Email)
                     .IsUnique()
                     .HasDatabaseName("IX_Usuario_Email");
+
+                //Indice unico para la cedula
+                 entity.HasIndex(u => u.Cedula)
+                       .IsUnique()
+                       .HasDatabaseName("IX_Usuario_Cedula");
+                       
 
                 entity.Property(u => u.ContrasenaHash)
                     .IsRequired()

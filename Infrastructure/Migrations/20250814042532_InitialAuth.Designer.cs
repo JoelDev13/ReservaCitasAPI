@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistencia.Contexto;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CitasDbContext))]
-    partial class CitasDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250814042532_InitialAuth")]
+    partial class InitialAuth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,7 +38,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("Estado")
                         .HasColumnType("integer")
-                        .HasComment("0=Ninguno, 1=Renovacion, 2=PrimeraVez, 3=Duplicado, 4=CambioCategoria\"");
+                        .HasComment("1=Confirmada, 2=Cancelada, 3=Pendiente");
 
                     b.Property<DateTime>("FechaHora")
                         .HasColumnType("timestamp");
@@ -156,11 +159,6 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Cedula")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
                     b.Property<string>("ContrasenaHash")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -180,10 +178,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Cedula")
-                        .IsUnique()
-                        .HasDatabaseName("IX_Usuario_Cedula");
 
                     b.HasIndex("Email")
                         .IsUnique()

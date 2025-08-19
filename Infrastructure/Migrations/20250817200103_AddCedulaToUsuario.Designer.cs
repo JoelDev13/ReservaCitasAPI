@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CitasDbContext))]
-    [Migration("20250814211843_InitialAuth")]
-    partial class InitialAuth
+    [Migration("20250817200103_AddCedulaToUsuario")]
+    partial class AddCedulaToUsuario
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,7 +38,7 @@ namespace Infrastructure.Migrations
 
                     b.Property<int>("Estado")
                         .HasColumnType("integer")
-                        .HasComment("1=Confirmada, 2=Cancelada, 3=Pendiente");
+                        .HasComment("0=Ninguno, 1=Renovacion, 2=PrimeraVez, 3=Duplicado, 4=CambioCategoria\"");
 
                     b.Property<DateTime>("FechaHora")
                         .HasColumnType("timestamp");
@@ -159,6 +159,11 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Cedula")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<string>("ContrasenaHash")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -178,6 +183,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Cedula")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Usuario_Cedula");
 
                     b.HasIndex("Email")
                         .IsUnique()

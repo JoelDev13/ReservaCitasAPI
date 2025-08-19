@@ -20,6 +20,11 @@ namespace Infrastructure.Persistencia.Repositorios
             return _context.Usuarios.FirstOrDefault(u => u.Email == email);
         }
 
+        public Usuario? ObtenerPorCedula(string cedula)
+        {
+            return _context.Usuarios.FirstOrDefault(u => u.Cedula == cedula);
+        }
+
         public void Agregar(Usuario entity)
         {
             _context.Usuarios.Add(entity);
