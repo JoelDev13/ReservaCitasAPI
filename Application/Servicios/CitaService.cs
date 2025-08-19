@@ -6,9 +6,16 @@ using Domain.Interfaces;
 
 namespace Application.Servicios
 {
+    
+    // PRUEBA GIT
+    
     // Este es mi CitaService que maneja toda la logica de negocio de las citas
     // Lo hice asi porque quiero separar la logica de negocio de los controllers
     // Asi puedo reutilizar esta logica en otros lugares si es necesario
+    // ==========================================
+    // CAMBIO REALIZADO: AGREGADO COMENTARIO DE PRUEBA
+    // FECHA: 19/08/2025 - PRUEBA DE DETECCION GIT
+    // ==========================================
     public class CitaService : ICitaService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -42,7 +49,19 @@ namespace Application.Servicios
                 // Obtengo las estaciones disponibles
                 var estaciones = await _unitOfWork.Estaciones.GetAllAsync();
                 if (!estaciones.Any())
-                    throw new Exception("No hay estaciones disponibles");
+                {
+                    await CrearEstacionesPorDefectoAsync(config.CantidadEstaciones);
+                    estaciones = await _unitOfWork.Estaciones.GetAllAsync();
+                }
+
+                // Valido que haya suficientes estaciones para la configuracion
+                if (estaciones.Count < config.CantidadEstaciones)
+                {
+                    // Si no hay suficientes, creo las que faltan
+                    var estacionesFaltantes = config.CantidadEstaciones - estaciones.Count;
+                    await CrearEstacionesPorDefectoAsync(estacionesFaltantes);
+                    estaciones = await _unitOfWork.Estaciones.GetAllAsync();
+                }
 
                 // Calculo cuantos slots de tiempo caben en el turno
                 var inicio = turno.HoraInicio;
@@ -393,6 +412,35 @@ namespace Application.Servicios
             catch (Exception ex)
             {
                 _logService.LogError($"Error obteniendo citas del usuario {usuarioId}", ex);
+                throw;
+            }
+        }
+
+        // Método privado para crear estaciones automáticamente
+        // Lo hice así porque no quiero que el admin tenga que crear estaciones manualmente
+        // El sistema las crea según la configuración necesaria
+        private async Task CrearEstacionesPorDefectoAsync(int cantidadNecesaria)
+        {
+            try
+            {
+                var estacionesExistentes = await _unitOfWork.Estaciones.GetAllAsync();
+                var ultimoNumero = estacionesExistentes.Any() ? estacionesExistentes.Max(e => e.Numero) : 0;
+
+                for (int i = 1; i <= cantidadNecesaria; i++)
+                {
+                    var nuevaEstacion = new Estacion
+                    {
+                        Numero = ultimoNumero + i
+                    };
+                    await _unitOfWork.Estaciones.AddAsync(nuevaEstacion);
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+                _logService.LogConfiguracion($"ESTACIONES CREADAS - {cantidadNecesaria} estaciones nuevas creadas automáticamente", 0);
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError($"Error creando estaciones por defecto", ex);
                 throw;
             }
         }

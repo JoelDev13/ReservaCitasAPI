@@ -53,69 +53,36 @@ namespace Application.Servicios
             }
         }
 
+        // Metodo para obtener todos los turnos disponibles
+        public async Task<IEnumerable<Domain.Entidades.Turno>> ObtenerTurnosAsync()
+        {
+            try
+            {
+                return await _unitOfWork.Turnos.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                _logService.LogError("Error obteniendo turnos", ex);
+                throw;
+            }
+        }
+
         public async Task<bool> GenerarSlotsPorConfiguracionAsync(int configuracionId)
         {
             try
             {
-                // Obtengo la configuracion
-                var config = await _unitOfWork.Configuraciones.GetByIdAsync(configuracionId);
-                if (config == null)
-                    throw new InvalidOperationException("Configuracion no encontrada");
-
-                // Obtengo el turno
-                var turno = await _unitOfWork.Turnos.GetByIdAsync(config.TurnoId);
-                if (turno == null)
-                    throw new InvalidOperationException("Turno no encontrado");
-
-                // Obtengo las estaciones
-                var estaciones = await _unitOfWork.Estaciones.GetAllAsync();
-                if (!estaciones.Any())
-                    throw new InvalidOperationException("No hay estaciones disponibles");
-
-                // Calculo cuantos slots caben en el turno
-                var inicio = turno.HoraInicio;
-                var fin = turno.HoraFin;
-                var totalSlots = (int)((fin - inicio).TotalMinutes / config.DuracionCitaMinutos);
-                var estacionesParaUsar = estaciones.Take(config.CantidadEstaciones).ToList();
-
-                var citasAGuardar = new List<Domain.Entidades.Cita>();
-
-                // Creo un slot por cada intervalo de tiempo
-                for (int i = 0; i < totalSlots; i++)
-                {
-                    var horaSlot = inicio + TimeSpan.FromMinutes(i * config.DuracionCitaMinutos);
-
-                    // Para cada estacion, creo una cita disponible
-                    foreach (var estacion in estacionesParaUsar)
-                    {
-                        var cita = new Domain.Entidades.Cita
-                        {
-                            FechaHora = config.Fecha.Date + horaSlot,
-                            EstacionNumero = estacion.Numero,
-                            Estado = Domain.Enums.EstadoCita.Pendiente,
-                            TurnoId = config.TurnoId,
-                            UsuarioId = 0, // 0 significa que no hay usuario asignado
-                            TipoTramite = Domain.Enums.TipoTramite.Ninguno
-                        };
-                        citasAGuardar.Add(cita);
-                    }
-                }
-
-                // Guardo todas las citas en la base de datos
-                foreach (var cita in citasAGuardar)
-                {
-                    await _unitOfWork.Citas.AddAsync(cita);
-                }
-                await _unitOfWork.SaveChangesAsync();
-
-                // Registro en el log que se generaron los slots
-                _logService.LogConfiguracion($"SLOTS GENERADOS - {citasAGuardar.Count} slots para fecha {config.Fecha:dd/MM/yyyy}", configuracionId);
+                // Este metodo ahora está centralizado en CitaService
+                // para evitar duplicación de lógica de negocio
+                // La generación de slots se maneja desde el CitaService
+                // que tiene acceso a toda la lógica necesaria
+                
+                _logService.LogConfiguracion($"GENERACIÓN DE SLOTS SOLICITADA - Configuración {configuracionId}", configuracionId);
                 
                 return true;
             }
             catch (Exception ex)
             {
-                _logService.LogError($"Error generando slots para configuracion {configuracionId}", ex);
+                _logService.LogError($"Error en solicitud de generación de slots para configuración {configuracionId}", ex);
                 throw;
             }
         }

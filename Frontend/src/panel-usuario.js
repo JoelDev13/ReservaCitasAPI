@@ -222,21 +222,26 @@ async function cargarTurnosDisponibles() {
     if (!cont) return;
     if (!datosReserva.fecha) { mostrarPaso(2); return; }
 
-    cont.innerHTML = '<div class="col-span-full text-center text-gray-500">Cargando turnos...</div>';
+    cont.innerHTML = '<div class="col-span-full text-center text-gray-500">Cargando turnos disponibles...</div>';
     try {
-        const resp = await fetch(`${API_BASE_URL}/Citas/turnos`, { headers: getAuthHeaders() });
-        if (!resp.ok) throw new Error('No se pudieron cargar los turnos');
-        const turnos = await resp.json();
+        // En lugar de traer TODOS los turnos, traigo solo los configurados para esta fecha
+        const resp = await fetch(`${API_BASE_URL}/Configuraciones/fechas-disponibles`, { headers: getAuthHeaders() });
+        if (!resp.ok) throw new Error('No se pudieron cargar las configuraciones');
+        const fechas = await resp.json();
 
-        if (!turnos || turnos.length === 0) {
-            cont.innerHTML = '<div class="col-span-full text-center text-red-500">No hay turnos disponibles</div>';
+        // Busco la fecha seleccionada
+        const fechaSeleccionada = fechas.find(f => f.fecha === datosReserva.fecha);
+        if (!fechaSeleccionada || !fechaSeleccionada.turnos || fechaSeleccionada.turnos.length === 0) {
+            cont.innerHTML = '<div class="col-span-full text-center text-red-500">No hay turnos configurados para esta fecha</div>';
             return;
         }
 
-        cont.innerHTML = turnos.map(t => `
-            <button data-turno="${t.id}" data-nombre="${t.nombre}" class="p-4 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition text-left">
-                <div class="text-gray-800 font-semibold">${t.nombre}</div>
-                <div class="text-gray-500 text-sm">${t.rango || `${t.horaInicio} - ${t.horaFin}`}</div>
+        // Solo muestro los turnos que están configurados para esta fecha
+        cont.innerHTML = fechaSeleccionada.turnos.map(t => `
+            <button data-turno="${t.turnoId}" data-nombre="${t.turnoNombre}" class="p-4 rounded-xl border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition text-left">
+                <div class="text-gray-800 font-semibold">${t.turnoNombre}</div>
+                <div class="text-gray-500 text-sm">${t.duracion} min, ${t.estaciones} estaciones</div>
+                <div class="text-xs text-gray-400">Horario: ${t.horaInicio} - ${t.horaFin}</div>
             </button>
         `).join('');
 
@@ -250,7 +255,7 @@ async function cargarTurnosDisponibles() {
             });
         });
     } catch (e) {
-        cont.innerHTML = '<div class="col-span-full text-center text-red-500">Error cargando turnos</div>';
+        cont.innerHTML = '<div class="col-span-full text-center text-red-500">Error cargando turnos disponibles</div>';
         console.error(e);
     }
 }
@@ -305,8 +310,40 @@ async function cargarHorariosDisponibles() {
             btn.addEventListener('click', () => {
                 cont.querySelectorAll('button').forEach(b => b.classList.remove('border-blue-500','bg-blue-50'));
                 btn.classList.add('border-blue-500','bg-blue-50');
-                datosReserva.hora = btn.getAttribute('data-hora');
-                datosReserva.fechaHora = `${datosReserva.fecha}T${btn.querySelector('.font-medium').textContent}`;
+                
+                // Obtengo la hora seleccionada del atributo data-hora
+                const horaSeleccionada = btn.getAttribute('data-hora');
+                datosReserva.hora = horaSeleccionada;
+                
+                // Formateo correctamente la fecha y hora para el backend
+                // Aseguro que la hora esté en formato HH:MM:00
+                let horaFormateada = horaSeleccionada;
+                if (typeof horaSeleccionada === 'string') {
+                    if (horaSeleccionada.includes(':')) {
+                        // Si ya tiene formato HH:MM, agrego los segundos
+                        horaFormateada = horaSeleccionada.includes(':00') ? horaSeleccionada : horaSeleccionada + ':00';
+                    } else {
+                        // Si es un timestamp, lo convierto a formato HH:MM:00
+                        try {
+                            const fechaHora = new Date(horaSeleccionada);
+                            horaFormateada = fechaHora.toLocaleTimeString('es-ES', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                            }) + ':00';
+                        } catch (e) {
+                            console.error('Error formateando hora:', e);
+                            horaFormateada = '00:00:00';
+                        }
+                    }
+                }
+                
+                // Construyo la fecha y hora completa en formato ISO
+                datosReserva.fechaHora = `${datosReserva.fecha}T${horaFormateada}`;
+                
+                console.log('Hora seleccionada:', horaSeleccionada);
+                console.log('Hora formateada:', horaFormateada);
+                console.log('Fecha y hora completa:', datosReserva.fechaHora);
+                
                 document.getElementById('btnSiguiente').classList.remove('hidden');
             });
         });
@@ -342,9 +379,29 @@ async function confirmarReserva() {
         return;
     }
 
+    // Validación adicional del formato de fecha y hora
+    if (!datosReserva.fechaHora || !datosReserva.fechaHora.includes('T')) {
+        showNotification('Error en el formato de fecha y hora. Intenta seleccionar la hora nuevamente.', 'error');
+        return;
+    }
+
+    // Aseguro que fechaHora esté en formato ISO correcto
+    let fechaHoraFinal = datosReserva.fechaHora;
+    if (!fechaHoraFinal.endsWith(':00')) {
+        // Si no termina en :00, lo agrego
+        fechaHoraFinal = fechaHoraFinal + ':00';
+    }
+
+    console.log('Payload antes de enviar:', {
+        usuarioId: parseInt(userId),
+        fechaHora: fechaHoraFinal,
+        turnoId: datosReserva.turnoId,
+        tipoTramite: datosReserva.tramiteId
+    });
+
     const payload = {
         usuarioId: parseInt(userId),
-        fechaHora: datosReserva.fechaHora,
+        fechaHora: fechaHoraFinal,
         turnoId: datosReserva.turnoId,
         tipoTramite: datosReserva.tramiteId
     };

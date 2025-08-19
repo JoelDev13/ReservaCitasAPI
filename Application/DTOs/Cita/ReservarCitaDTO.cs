@@ -16,8 +16,8 @@ namespace Application.DTOs.Cita
 
         [Required]
         public TipoTramite TipoTramite { get; set; }
+        
+        [Required]
         public int TurnoId { get; set; }
-
-
     }
 }

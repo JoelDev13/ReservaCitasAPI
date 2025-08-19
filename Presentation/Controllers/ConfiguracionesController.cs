@@ -51,6 +51,10 @@ namespace Presentation.Controllers
             try
             {
                 var configuraciones = await _service.ObtenerConfiguracionesActivasAsync();
+                
+                // Necesito obtener informacion de los turnos para mostrar nombres y horarios
+                var turnos = await _service.ObtenerTurnosAsync(); // Necesito agregar este metodo
+                
                 var fechas = configuraciones
                     .Select(c => new { 
                         fecha = c.Fecha.ToString("yyyy-MM-dd"),
@@ -63,10 +67,16 @@ namespace Presentation.Controllers
                     .Select(g => new {
                         fecha = g.Key,
                         fechaFormateada = g.First().fechaFormateada,
-                        turnos = g.Select(t => new {
-                            turnoId = t.turnoId,
-                            duracion = t.duracion,
-                            estaciones = t.estaciones
+                        turnos = g.Select(t => {
+                            var turno = turnos.FirstOrDefault(tr => tr.Id == t.turnoId);
+                            return new {
+                                turnoId = t.turnoId,
+                                turnoNombre = turno?.Nombre ?? "Turno Desconocido",
+                                duracion = t.duracion,
+                                estaciones = t.estaciones,
+                                horaInicio = turno?.HoraInicio.ToString(@"hh\:mm") ?? "00:00",
+                                horaFin = turno?.HoraFin.ToString(@"hh\:mm") ?? "00:00"
+                            };
                         }).ToList()
                     })
                     .OrderBy(f => f.fecha)
