@@ -79,7 +79,7 @@ ReservaCitasAPI/
 
 - **Backend**: .NET 6, Entity Framework Core
 - **Frontend**: HTML5, CSS3 (Tailwind CSS), JavaScript ES6+
-- **Base de Datos**: SQL Server (con migraciones automáticas)
+- **Base de Datos**: POSTGRESQL (con migracion)
 - **Autenticación**: JWT (JSON Web Tokens)
 - **Email**: Servicio SMTP configurable
 
